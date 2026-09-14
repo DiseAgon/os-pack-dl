@@ -246,7 +246,7 @@ Wallet commands take `--priv-key-file` unless noted.
 }
 ```
 
-`storage_limit` / `storage_used` are **byte strings**. Before the first successful `start`, used is `0` (the node is not registered yet).
+`storage_limit` / `storage_used` are **byte strings**.
 
 ### Logs
 
