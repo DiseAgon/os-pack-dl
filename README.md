@@ -20,13 +20,13 @@ You do **not** need a `.env` or a hub URL. Those are baked into the binary.
 | **`ai-cli --json start`** | One JSON object. Does **not** stream logs unless you also pass **`--follow`** (logs then go to **stderr**). |
 | **Everything else** (`version`, `storage`, `reward`, `status`, `logs`, `update`, `doctor`, …) | Indented JSON. You do **not** need `--json`. |
 | **Help** | Human. |
-| **Errors** | One text line on **stderr**. Exit code ≠ 0. |
+| **Errors** | JSON on **stdout**: `{"error": "…"}`. Exit ≠ 0. Same for `start` and `keytool`. Success JSON includes `"error": null`. |
 
 Windows PowerShell: type `.\ai-cli.exe` (the `.\` is required). Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 ## Install
 
-Current release: **0.30** (`v0.30.0-demo`).
+Current release: **0.31** (`v0.31.0-demo`).
 
 ### Windows
 
@@ -41,8 +41,8 @@ Or the zip:
 
 ```powershell
 cd $env:USERPROFILE
-curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.30.zip
-Expand-Archive -Path aioz-ai-cli-windows-amd64-0.30.zip -DestinationPath .
+curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.31.zip
+Expand-Archive -Path aioz-ai-cli-windows-amd64-0.31.zip -DestinationPath .
 ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 .\ai-cli.exe version
 ```
@@ -58,8 +58,8 @@ curl -fsSL https://github.com/DiseAgon/os-pack-dl/releases/latest/download/insta
 Or the archive:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.30.tar.gz
-tar -xzf aioz-ai-cli-linux-amd64-0.30.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.31.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-0.31.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
@@ -74,28 +74,28 @@ curl -fsSL https://github.com/DiseAgon/os-pack-dl/releases/latest/download/insta
 
 | `uname -m` | Chip | Archive | Inner file |
 |------------|------|---------|------------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.30.tar.gz` | `aioz-ai-cli-darwin-arm64` |
-| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.30.tar.gz` | `aioz-ai-cli-darwin-amd64` |
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.31.tar.gz` | `aioz-ai-cli-darwin-arm64` |
+| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.31.tar.gz` | `aioz-ai-cli-darwin-amd64` |
 
 Apple Silicon, manual:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.30.tar.gz
-tar -xzf aioz-ai-cli-darwin-arm64-0.30.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.31.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-0.31.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
-Intel: same steps with `aioz-ai-cli-darwin-amd64-0.30.tar.gz` / `aioz-ai-cli-darwin-amd64`. Do not use the Intel archive on Apple Silicon.
+Intel: same steps with `aioz-ai-cli-darwin-amd64-0.31.tar.gz` / `aioz-ai-cli-darwin-amd64`. Do not use the Intel archive on Apple Silicon.
 
 `version`:
 
 ```json
 {
-  "built": "2026-09-14T03:06:01Z",
-  "commit": "v0.30.0-demo",
-  "version": "0.30"
+  "built": "2026-09-16T04:46:41Z",
+  "commit": "v0.31.0-demo",
+  "version": "0.31"
 }
 ```
 
@@ -115,6 +115,7 @@ Windows: `.\ai-cli.exe keytool new --save-priv-key privkey.json`.
 {
   "address": "…",
   "address_evm": "0xAbc0…def1",
+  "error": null,
   "mnemonic": "twelve words …",
   "priv_key_file": "privkey.json"
 }
@@ -122,11 +123,14 @@ Windows: `.\ai-cli.exe keytool new --save-priv-key privkey.json`.
 
 Treat `privkey.json` and the mnemonic as **wallet secrets**. Use a **dedicated key for each node**. Keep an offline backup. Never paste them into websites, chats, or support tickets.
 
-Recover later from a file (do not put the words on the command line):
+Recover later — paste the 12 or 24 words (quote the phrase), or use a file:
 
 ```bash
+./ai-cli keytool recover "word1 word2 ... word12" --save-priv-key privkey.json
 ./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
 ```
+
+Wrong count: `{"error": "mnemonic has 11 words (too few); need 12 or 24"}`. Empty recover: `need mnemonic words or --mnemonic-file`.
 
 ### 2. Set a storage limit
 
@@ -159,7 +163,7 @@ Without `--home`, this wallet gets a UUID folder:
 ./ai-cli start --priv-key-file privkey.json
 ```
 
-`--priv-key-file` is required. Default `start` prints a **card**, then **streams logs**. Ctrl+C stops **this wallet** only. There is no `stop` command.
+`--priv-key-file` is required. Default `start` prints a **card**, then **streams logs**. Ctrl+C stops **this wallet** only. There is no `stop` command. Failures (missing key, no storage limit, extra args) print `{"error": "…"}` on stdout. If `node.pid` is deleted while the node is running, that process exits (one live node per wallet).
 
 JSON start (no live logs unless `--follow`):
 
@@ -170,6 +174,7 @@ JSON start (no live logs unless `--follow`):
 ```json
 {
   "data_dir": "~/.local/share/aioz/ai-nodes/<uuid>",
+  "error": null,
   "evm_address": "0xAbc0…def1",
   "home": "~/.local/share/aioz/ai-nodes/<uuid>",
   "log_path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
@@ -180,10 +185,10 @@ JSON start (no live logs unless `--follow`):
   "update": {
     "skipped": false,
     "newer": false,
-    "current": "0.30",
-    "current_commit": "v0.30.0-demo",
-    "remote": "0.30",
-    "remote_commit": "v0.30.0-demo",
+    "current": "0.31",
+    "current_commit": "v0.31.0-demo",
+    "remote": "0.31",
+    "remote_commit": "v0.31.0-demo",
     "note": "CLI is up to date"
   }
 }
@@ -319,10 +324,10 @@ Most commands also check GitHub and may replace the binary when a newer signed r
 {
   "skipped": false,
   "newer": false,
-  "current": "0.30",
-  "current_commit": "v0.30.0-demo",
-  "remote": "0.30",
-  "remote_commit": "v0.30.0-demo",
+  "current": "0.31",
+  "current_commit": "v0.31.0-demo",
+  "remote": "0.31",
+  "remote_commit": "v0.31.0-demo",
   "note": "CLI is up to date"
 }
 ```
@@ -346,7 +351,7 @@ Hub snapshot (`wallet_address` is the hub field name):
 }
 ```
 
-If the hub is unreachable, this command prints an error on **stderr** instead of JSON.
+If the hub is unreachable, stdout is `{"error": "…"}` and the process exits non-zero.
 
 ### Doctor
 
@@ -383,19 +388,24 @@ Prints `address_evm` and `address`. Never prints the private key.
 | Symptom | Fix |
 |---------|-----|
 | `command not found` after install | Open a new terminal, or `source ~/.bashrc` / `~/.zshrc`. Binary is `~/.local/bin/ai-cli`. |
-| `sha256sum: command not found` | You ran an old installer on macOS. Use **0.30+** `install.sh` (it uses `openssl`). |
+| `sha256sum: command not found` | You ran an old installer on macOS. Use **0.31+** `install.sh` (it uses `openssl`). |
 | macOS “cannot be opened because the developer cannot be verified” | `xattr -dr com.apple.quarantine ./ai-cli` then run it again. |
 | `Access is denied` on Windows | `cd $env:USERPROFILE` — do not run as Administrator in a protected folder. |
 | `set a storage limit before start` | `storage limit N --priv-key-file privkey.json` with **N > 2**. |
 | `storage must be greater than 2 GB` | Same: N must be **greater than 2**. |
+| `storage limit must be a number of GB` | Pass a number (`10`), not `10GB` or `abc`. |
+| `mnemonic has N words` | Recover needs **12 or 24** words. |
+| `need mnemonic words or --mnemonic-file` | Quote the phrase or pass `--mnemonic-file`. |
+| `start does not take arguments` | Only flags (`--priv-key-file`). |
 | `--priv-key-file is required` | Pass the JSON you created with `keytool new`. |
 | `wallet_address already running` | Ctrl+C that wallet's `start`. One live node per key. |
+| Node died after deleting `node.pid` | Expected. Start again. Do not delete `node.pid` while the node is running. |
 | Inner archive file is `aioz-ai-cli-darwin-arm64`, not `ai-cli` | `mv` it as in the install steps. |
 | Intel binary on Apple Silicon (or the reverse) | Match `uname -m` to the table above. |
 
 ## Security
 
-- Never put the mnemonic or `privkey.json` on the command line except as a **file path**.
+- Recover may take a quoted mnemonic; it can appear in shell history. `--mnemonic-file` avoids that. Never put `privkey.json` contents on the command line.
 - Never paste keys into chat, tickets, or websites.
 - `logs` redacts secrets it recognizes; the file on disk may still contain runtime noise — do not publish it.
 - This repo keeps **only the latest** release. A bad build is replaced by the next signed version; there is no tag rollback on GitHub.
