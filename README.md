@@ -1,8 +1,8 @@
-# Host CLI
+# AIOZ AI CLI
 
 Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64). This GitHub repository is **download + version-check only**. It is not the source tree. Only the **latest** release is kept.
 
-`ai-cli` runs a node on your machine, takes AI tasks, and earns HOST rewards. The node runtime and keytool are **bundled inside the binary** and extracted on first use.
+`ai-cli` runs a node on your machine, takes AI tasks, and earns AIOZ rewards.
 
 ## Requirements
 
@@ -10,17 +10,7 @@ Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64)
 - Ubuntu 20.04 64-bit (amd64) or later
 - macOS 12+ 64-bit, Apple Silicon (arm64) or Intel (amd64)
 
-You do **not** need a `.env` or a hub URL. Those are baked into the binary.
-
-## Output
-
-| Command | stdout |
-|---------|--------|
-| **`start`** | Human **card**, then **live logs**. Ctrl+C stops **this wallet**. |
-| **`ai-cli --json start`** | One JSON object. Does **not** stream logs unless you also pass **`--follow`** (logs then go to **stderr**). |
-| **Everything else** (`version`, `storage`, `reward`, `status`, `logs`, `update`, `doctor`, …) | Indented JSON. You do **not** need `--json`. |
-| **Help** | Human. |
-| **Errors** | JSON on **stdout**: `{"error": "…"}`. Exit ≠ 0. Same for `start` and `keytool`. Success JSON includes `"error": null`. |
+`start` prints a **card**, then **streams logs**. Other commands print indented JSON. Failures print `{"error": "…"}` on stdout (exit ≠ 0). Success JSON includes `"error": null`.
 
 Windows PowerShell: type `.\ai-cli.exe` (the `.\` is required). Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
@@ -89,12 +79,13 @@ xattr -dr com.apple.quarantine ./ai-cli
 
 Intel: same steps with `aioz-ai-cli-darwin-amd64-0.31.tar.gz` / `aioz-ai-cli-darwin-amd64`. Do not use the Intel archive on Apple Silicon.
 
-`version`:
+`version` prints the installed CLI:
 
 ```json
 {
   "built": "2026-09-16T04:46:41Z",
   "commit": "v0.31.0-demo",
+  "error": null,
   "version": "0.31"
 }
 ```
@@ -103,17 +94,25 @@ Intel: same steps with `aioz-ai-cli-darwin-amd64-0.31.tar.gz` / `aioz-ai-cli-dar
 
 ### 1. Create a key
 
+Writes a new private-key JSON and prints the mnemonic once.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool new --save-priv-key privkey.json
+```
+
+**Linux and macOS**
+
 ```bash
 ./ai-cli keytool new --save-priv-key privkey.json
 ```
-
-Windows: `.\ai-cli.exe keytool new --save-priv-key privkey.json`.
 
 `--save-priv-key` writes the private key JSON (mode `0600`). Store the mnemonic now; it is not shown again. This does not create a data folder.
 
 ```json
 {
-  "address": "…",
+  "address": "aioz1…",
   "address_evm": "0xAbc0…def1",
   "error": null,
   "mnemonic": "twelve words …",
@@ -123,7 +122,16 @@ Windows: `.\ai-cli.exe keytool new --save-priv-key privkey.json`.
 
 Treat `privkey.json` and the mnemonic as **wallet secrets**. Use a **dedicated key for each node**. Keep an offline backup. Never paste them into websites, chats, or support tickets.
 
-Recover later — paste the 12 or 24 words (quote the phrase), or use a file:
+Recover from 12 or 24 words (quote the phrase), or from a file:
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool recover "word1 word2 ... word12" --save-priv-key privkey.json
+.\ai-cli.exe keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli keytool recover "word1 word2 ... word12" --save-priv-key privkey.json
@@ -135,6 +143,14 @@ Wrong count: `{"error": "mnemonic has 11 words (too few); need 12 or 24"}`. Empt
 ### 2. Set a storage limit
 
 Required **before** `start`. The value must be **greater than 2 GB**. There is no 2 GB default. Bare `storage` prints help.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe storage limit 10 --priv-key-file privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli storage limit 10 --priv-key-file privkey.json
@@ -159,53 +175,31 @@ Without `--home`, this wallet gets a UUID folder:
 
 ### 3. Start
 
+Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this wallet** only. There is no `stop` command. `--priv-key-file` is required.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe start --priv-key-file privkey.json
+```
+
+**Linux and macOS**
+
 ```bash
 ./ai-cli start --priv-key-file privkey.json
 ```
 
-`--priv-key-file` is required. Default `start` prints a **card**, then **streams logs**. Ctrl+C stops **this wallet** only. There is no `stop` command. Failures (missing key, no storage limit, extra args) print `{"error": "…"}` on stdout. If `node.pid` is deleted while the node is running, that process exits (one live node per wallet).
-
-JSON start (no live logs unless `--follow`):
-
-```bash
-./ai-cli --json start --priv-key-file privkey.json
+```
+╭─ AIOZ AI CLI ──────────────────────────────────────────╮
+│  CLI  0.31                                             │
+│  EVM  0xAbc0…def1                                      │
+│  Home ~/.local/share/aioz/ai-nodes/<uuid>              │
+╰────────────────────────────────────────────────────────╯
 ```
 
-```json
-{
-  "data_dir": "~/.local/share/aioz/ai-nodes/<uuid>",
-  "error": null,
-  "evm_address": "0xAbc0…def1",
-  "home": "~/.local/share/aioz/ai-nodes/<uuid>",
-  "log_path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
-  "pid": 12345,
-  "pid_path": "~/.local/state/aioz/ai-cli/<uuid>/node.pid",
-  "running": true,
-  "storage_bytes": 10000000000,
-  "update": {
-    "skipped": false,
-    "newer": false,
-    "current": "0.31",
-    "current_commit": "v0.31.0-demo",
-    "remote": "0.31",
-    "remote_commit": "v0.31.0-demo",
-    "note": "CLI is up to date"
-  }
-}
-```
+Logs then stream in the same terminal.
 
-On default UUID homes, **Home** and the data dir are the same path; the human card then omits **Dir**. JSON still has `data_dir`.
-
-Ctrl+C then prints a **second** JSON object (`--json`). `running` here is a **count** of other node processes still live (not a boolean):
-
-```json
-{
-  "running": 0,
-  "status": "stopped"
-}
-```
-
-If this wallet is already running, the first object is only `running`, `pid`, `pid_path`, plus `update`.
+Failures (missing key, no storage limit, extra args) print `{"error": "…"}` on stdout.
 
 Log paths:
 
@@ -220,6 +214,16 @@ Log paths:
 Wallet commands take `--priv-key-file` unless noted.
 
 ### Status
+
+Whether this wallet's node process is running on this machine.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe status --priv-key-file privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli status --priv-key-file privkey.json
@@ -239,6 +243,16 @@ Wallet commands take `--priv-key-file` unless noted.
 
 ### Storage show
 
+Storage cap and usage for this wallet (byte strings).
+
+**Windows**
+
+```powershell
+.\ai-cli.exe storage show --priv-key-file privkey.json
+```
+
+**Linux and macOS**
+
 ```bash
 ./ai-cli storage show --priv-key-file privkey.json
 ```
@@ -251,11 +265,17 @@ Wallet commands take `--priv-key-file` unless noted.
 }
 ```
 
-`storage_limit` / `storage_used` are **byte strings**.
-
 ### Logs
 
-`logs` is a **snapshot** (last `--bytes`, default 32 KiB), not a live follow. Secrets in the file are redacted.
+Snapshot of `ai.log` (last `--bytes`, default 32 KiB), not a live follow. Secrets in the file are redacted.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe logs --priv-key-file privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli logs --priv-key-file privkey.json
@@ -274,7 +294,15 @@ Live logs: leave `start` attached, or tail `path` / `log_path` on disk.
 
 ### Reward balance
 
-Works with the node off.
+Spendable and earned AIOZ. Works with the node off. Denom is `attoaioz`.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe reward balance --priv-key-file privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli reward balance --priv-key-file privkey.json
@@ -284,22 +312,30 @@ Works with the node off.
 {
   "earned": {
     "amount": "0",
-    "denom": "attohost",
-    "host": "0"
+    "denom": "attoaioz",
+    "aioz": "0"
   },
   "earned_count": 0,
   "error": null,
   "spendable": {
     "amount": "0",
-    "denom": "attohost",
-    "host": "0"
+    "denom": "attoaioz",
+    "aioz": "0"
   }
 }
 ```
 
 ### Withdraw
 
-`--address` is a MetaMask `0x` on HOST Chain. `--amount` is in HOST. Minimum **0.01 HOST**. `--yes` skips the confirm prompt.
+Send rewards to a MetaMask `0x` on AIOZ. `--amount` is in AIOZ. Minimum **0.01 AIOZ**. `--yes` skips the confirm prompt.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe reward withdraw --address 0xAbc0…def1 --amount 1 --priv-key-file privkey.json --yes
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli reward withdraw --address 0xAbc0…def1 --amount 1 --priv-key-file privkey.json --yes
@@ -314,7 +350,15 @@ Works with the node off.
 
 ### Update
 
-Most commands also check GitHub and may replace the binary when a newer signed release exists. To do that explicitly:
+Download the latest signed CLI and replace this binary. Most commands also check GitHub in the background.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe update
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli update
@@ -336,7 +380,15 @@ Most commands also check GitHub and may replace the binary when a newer signed r
 
 ### Stats
 
-Hub snapshot (`wallet_address` is the hub field name):
+Hub snapshot for this wallet: `status`, `wallet_address`, and `ai_tasks`.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe stats --priv-key-file privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli stats --priv-key-file privkey.json
@@ -346,14 +398,34 @@ Hub snapshot (`wallet_address` is the hub field name):
 {
   "ai_tasks": [],
   "error": null,
-  "status": "Online",
+  "status": "standby",
   "wallet_address": "0xAbc0…def1"
 }
 ```
 
+`status` values:
+
+| Value | Meaning |
+|-------|---------|
+| `standby` | Active and idle (ready for work). |
+| `computing` | Active and processing a task. |
+| `initiating` | Logging in and registering with the system; not ready yet. |
+| `coming_soon` | Went offline within the last 2 minutes. |
+| `offline` | Not active. |
+
 If the hub is unreachable, stdout is `{"error": "…"}` and the process exits non-zero.
 
 ### Doctor
+
+Checks disk, runtime, wallet, GPU, and this wallet's log.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe doctor --priv-key-file privkey.json
+```
+
+**Linux and macOS**
 
 ```bash
 ./ai-cli doctor --priv-key-file privkey.json
@@ -377,18 +449,26 @@ If the hub is unreachable, stdout is `{"error": "…"}` and the process exits no
 
 ### Show address
 
+Prints `address_evm` and `address`. Never prints the private key.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool show --priv-key-file privkey.json
+```
+
+**Linux and macOS**
+
 ```bash
 ./ai-cli keytool show --priv-key-file privkey.json
 ```
-
-Prints `address_evm` and `address`. Never prints the private key.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
 | `command not found` after install | Open a new terminal, or `source ~/.bashrc` / `~/.zshrc`. Binary is `~/.local/bin/ai-cli`. |
-| `sha256sum: command not found` | You ran an old installer on macOS. Use **0.31+** `install.sh` (it uses `openssl`). |
+| `sha256sum: command not found` | You ran an old installer on macOS. Use **0.30+** `install.sh` (it uses `openssl`). |
 | macOS “cannot be opened because the developer cannot be verified” | `xattr -dr com.apple.quarantine ./ai-cli` then run it again. |
 | `Access is denied` on Windows | `cd $env:USERPROFILE` — do not run as Administrator in a protected folder. |
 | `set a storage limit before start` | `storage limit N --priv-key-file privkey.json` with **N > 2**. |
@@ -399,7 +479,6 @@ Prints `address_evm` and `address`. Never prints the private key.
 | `start does not take arguments` | Only flags (`--priv-key-file`). |
 | `--priv-key-file is required` | Pass the JSON you created with `keytool new`. |
 | `wallet_address already running` | Ctrl+C that wallet's `start`. One live node per key. |
-| Node died after deleting `node.pid` | Expected. Start again. Do not delete `node.pid` while the node is running. |
 | Inner archive file is `aioz-ai-cli-darwin-arm64`, not `ai-cli` | `mv` it as in the install steps. |
 | Intel binary on Apple Silicon (or the reverse) | Match `uname -m` to the table above. |
 
