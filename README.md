@@ -12,7 +12,9 @@ Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64)
 
 `start` prints a **card**, then **streams logs**. Other commands print indented JSON. Failures print `{"error": "…"}` on stdout (exit ≠ 0). Success JSON includes `"error": null`.
 
-Windows PowerShell: type `.\ai-cli.exe` (the `.\` is required). Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
+Windows PowerShell: type `.\ai-cli.exe` (the `.\` is required).
+
+Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 ## Install
 
