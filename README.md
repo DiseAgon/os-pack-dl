@@ -22,14 +22,7 @@ Current release: **0.31** (`v0.31.0-demo`).
 
 ### Windows
 
-Work in **your** profile folder. PowerShell as that user, not Administrator:
-
-```powershell
-cd $env:USERPROFILE
-irm https://github.com/DiseAgon/os-pack-dl/releases/latest/download/install.ps1 | iex
-```
-
-Or the zip:
+Work in **your** profile folder. PowerShell as that user, not Administrator. Download the zip and extract it:
 
 ```powershell
 cd $env:USERPROFILE
@@ -43,11 +36,7 @@ ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 
 ### Linux
 
-```bash
-curl -fsSL https://github.com/DiseAgon/os-pack-dl/releases/latest/download/install.sh | bash
-```
-
-Or the archive:
+Download the tar.gz and extract it:
 
 ```bash
 curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.31.tar.gz
@@ -58,18 +47,14 @@ mv aioz-ai-cli-linux-amd64 ai-cli
 
 ### macOS
 
-`install.sh` picks Apple Silicon vs Intel from `uname -m`:
-
-```bash
-curl -fsSL https://github.com/DiseAgon/os-pack-dl/releases/latest/download/install.sh | bash
-```
+Pick the archive that matches `uname -m`, then extract it:
 
 | `uname -m` | Chip | Archive | Inner file |
 |------------|------|---------|------------|
 | `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.31.tar.gz` | `aioz-ai-cli-darwin-arm64` |
 | `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.31.tar.gz` | `aioz-ai-cli-darwin-amd64` |
 
-Apple Silicon, manual:
+Apple Silicon:
 
 ```bash
 curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.31.tar.gz
@@ -469,8 +454,7 @@ Prints `address_evm` and `address`. Never prints the private key.
 
 | Symptom | Fix |
 |---------|-----|
-| `command not found` after install | Open a new terminal, or `source ~/.bashrc` / `~/.zshrc`. Binary is `~/.local/bin/ai-cli`. |
-| `sha256sum: command not found` | You ran an old installer on macOS. Use **0.30+** `install.sh` (it uses `openssl`). |
+| `command not found` | Run `./ai-cli` (Linux/macOS) or `.\ai-cli.exe` (Windows) from the folder you extracted. |
 | macOS “cannot be opened because the developer cannot be verified” | `xattr -dr com.apple.quarantine ./ai-cli` then run it again. |
 | `Access is denied` on Windows | `cd $env:USERPROFILE` — do not run as Administrator in a protected folder. |
 | `set a storage limit before start` | `storage limit N --priv-key-file privkey.json` with **N > 2**. |
