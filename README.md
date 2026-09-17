@@ -1,8 +1,8 @@
 # AIOZ AI CLI
 
-Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64). This GitHub repository is **download + version-check only**. It is not the source tree. Only the **latest** release is kept.
+`ai-cli` runs a node on your machine, takes AI tasks, and earns AIOZ rewards. Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64).
 
-`ai-cli` runs a node on your machine, takes AI tasks, and earns AIOZ rewards.
+What changed in a given version is on the GitHub Release page, not in this guide.
 
 ## Requirements
 
@@ -18,16 +18,15 @@ Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 ## Install
 
-Current release: **0.1.0** (`v0.1.0`).
+Download the archive for your OS from the [latest GitHub Release](https://github.com/DiseAgon/os-pack-dl/releases/latest). Extract it and rename the inner file to `ai-cli` or `ai-cli.exe`. There is no `install.sh`. Exact filenames are on that Release page.
 
 ### Windows
 
-Work in **your** profile folder. PowerShell as that user, not Administrator. Download the zip and extract it:
+Work in **your** profile folder. PowerShell as that user, not Administrator.
 
 ```powershell
 cd $env:USERPROFILE
-curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.1.0.zip
-Expand-Archive -Path aioz-ai-cli-windows-amd64-0.1.0.zip -DestinationPath .
+Expand-Archive -Path aioz-ai-cli-windows-amd64-*.zip -DestinationPath .
 ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 .\ai-cli.exe version
 ```
@@ -36,29 +35,25 @@ ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 
 ### Linux
 
-Download the tar.gz and extract it:
-
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-linux-amd64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-*.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
 
 ### macOS
 
-Pick the archive that matches `uname -m`, then extract it:
+Pick the archive that matches `uname -m`:
 
-| `uname -m` | Chip | Archive | Inner file |
-|------------|------|---------|------------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.0.tar.gz` | `aioz-ai-cli-darwin-arm64` |
-| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.1.0.tar.gz` | `aioz-ai-cli-darwin-amd64` |
+| `uname -m` | Chip | Inner file |
+|------------|------|------------|
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64` |
+| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64` |
 
 Apple Silicon:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-*.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -67,8 +62,7 @@ xattr -dr com.apple.quarantine ./ai-cli
 Intel:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-amd64-*.tar.gz
 mv aioz-ai-cli-darwin-amd64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -76,14 +70,14 @@ xattr -dr com.apple.quarantine ./ai-cli
 
 Do not use the Intel archive on Apple Silicon.
 
-`version` prints the installed CLI:
+`version` prints the installed CLI (values change per release):
 
 ```json
 {
-  "built": "2026-09-17T10:39:59Z",
-  "commit": "v0.1.0",
+  "built": "…",
+  "commit": "…",
   "error": null,
-  "version": "0.1.0"
+  "version": "…"
 }
 ```
 
@@ -188,7 +182,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 
 ```
 ╭─ AIOZ AI CLI ──────────────────────────────────────────╮
-│  CLI  0.1.0                                             │
+│  CLI  …                                                │
 │  EVM  0xAbc0…def1                                      │
 │  Home ~/.local/share/aioz/ai-nodes/<uuid>              │
 ╰────────────────────────────────────────────────────────╯
@@ -365,10 +359,10 @@ Download the latest signed CLI and replace this binary. Most commands also check
 {
   "skipped": false,
   "newer": false,
-  "current": "0.1.0",
-  "current_commit": "v0.1.0",
-  "remote": "0.1.0",
-  "remote_commit": "v0.1.0",
+  "current": "…",
+  "current_commit": "…",
+  "remote": "…",
+  "remote_commit": "…",
   "note": "CLI is up to date"
 }
 ```
