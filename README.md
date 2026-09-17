@@ -18,7 +18,7 @@ Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 ## Install
 
-Current release: **0.31** (`v0.31.0-demo`).
+Current release: **0.1.0** (`v0.1.0`).
 
 ### Windows
 
@@ -26,8 +26,8 @@ Work in **your** profile folder. PowerShell as that user, not Administrator. Dow
 
 ```powershell
 cd $env:USERPROFILE
-curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.31.zip
-Expand-Archive -Path aioz-ai-cli-windows-amd64-0.31.zip -DestinationPath .
+curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.1.0.zip
+Expand-Archive -Path aioz-ai-cli-windows-amd64-0.1.0.zip -DestinationPath .
 ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 .\ai-cli.exe version
 ```
@@ -39,8 +39,8 @@ ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 Download the tar.gz and extract it:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.31.tar.gz
-tar -xzf aioz-ai-cli-linux-amd64-0.31.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-0.1.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
@@ -51,14 +51,14 @@ Pick the archive that matches `uname -m`, then extract it:
 
 | `uname -m` | Chip | Archive | Inner file |
 |------------|------|---------|------------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.31.tar.gz` | `aioz-ai-cli-darwin-arm64` |
-| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.31.tar.gz` | `aioz-ai-cli-darwin-amd64` |
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.0.tar.gz` | `aioz-ai-cli-darwin-arm64` |
+| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.1.0.tar.gz` | `aioz-ai-cli-darwin-amd64` |
 
 Apple Silicon:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.31.tar.gz
-tar -xzf aioz-ai-cli-darwin-arm64-0.31.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -67,8 +67,8 @@ xattr -dr com.apple.quarantine ./ai-cli
 Intel:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.31.tar.gz
-tar -xzf aioz-ai-cli-darwin-amd64-0.31.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
 mv aioz-ai-cli-darwin-amd64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -80,10 +80,10 @@ Do not use the Intel archive on Apple Silicon.
 
 ```json
 {
-  "built": "2026-09-16T04:46:41Z",
-  "commit": "v0.31.0-demo",
+  "built": "2026-09-17T10:39:59Z",
+  "commit": "v0.1.0",
   "error": null,
-  "version": "0.31"
+  "version": "0.1.0"
 }
 ```
 
@@ -188,7 +188,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 
 ```
 ╭─ AIOZ AI CLI ──────────────────────────────────────────╮
-│  CLI  0.31                                             │
+│  CLI  0.1.0                                             │
 │  EVM  0xAbc0…def1                                      │
 │  Home ~/.local/share/aioz/ai-nodes/<uuid>              │
 ╰────────────────────────────────────────────────────────╯
@@ -365,10 +365,10 @@ Download the latest signed CLI and replace this binary. Most commands also check
 {
   "skipped": false,
   "newer": false,
-  "current": "0.31",
-  "current_commit": "v0.31.0-demo",
-  "remote": "0.31",
-  "remote_commit": "v0.31.0-demo",
+  "current": "0.1.0",
+  "current_commit": "v0.1.0",
+  "remote": "0.1.0",
+  "remote_commit": "v0.1.0",
   "note": "CLI is up to date"
 }
 ```
