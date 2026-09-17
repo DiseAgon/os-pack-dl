@@ -64,7 +64,17 @@ xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
-Intel: same steps with `aioz-ai-cli-darwin-amd64-0.31.tar.gz` / `aioz-ai-cli-darwin-amd64`. Do not use the Intel archive on Apple Silicon.
+Intel:
+
+```bash
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.31.tar.gz
+tar -xzf aioz-ai-cli-darwin-amd64-0.31.tar.gz
+mv aioz-ai-cli-darwin-amd64 ai-cli
+xattr -dr com.apple.quarantine ./ai-cli
+./ai-cli version
+```
+
+Do not use the Intel archive on Apple Silicon.
 
 `version` prints the installed CLI:
 
