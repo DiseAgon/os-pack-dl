@@ -1,8 +1,10 @@
 # AIOZ AI CLI
 
-`ai-cli` runs a node on your machine, takes AI tasks, and earns AIOZ rewards. Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64).
+`ai-cli` is the command-line tool for running and managing an AIOZ AI Node. It creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics.
 
-What changed in a given version is on the GitHub Release page, not in this guide.
+Supported platforms: Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64). The node runtime and keytool are bundled in the CLI binary.
+
+This is production **v0.1.0**. Release notes are on the [GitHub Release](https://github.com/DiseAgon/os-pack-dl/releases/latest).
 
 ## Requirements
 
@@ -18,7 +20,7 @@ Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 ## Install
 
-Download the archive for your OS from the [latest GitHub Release](https://github.com/DiseAgon/os-pack-dl/releases/latest). Extract it and rename the inner file to `ai-cli` or `ai-cli.exe`. There is no `install.sh`. Exact filenames are on that Release page.
+Download the archive for your OS, extract it, and rename the inner file to `ai-cli` or `ai-cli.exe`.
 
 ### Windows
 
@@ -26,7 +28,8 @@ Work in **your** profile folder. PowerShell as that user, not Administrator.
 
 ```powershell
 cd $env:USERPROFILE
-Expand-Archive -Path aioz-ai-cli-windows-amd64-*.zip -DestinationPath .
+curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.1.0.zip
+Expand-Archive -Path aioz-ai-cli-windows-amd64-0.1.0.zip -DestinationPath .
 ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 .\ai-cli.exe version
 ```
@@ -36,7 +39,8 @@ ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 ### Linux
 
 ```bash
-tar -xzf aioz-ai-cli-linux-amd64-*.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-0.1.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
@@ -45,15 +49,16 @@ mv aioz-ai-cli-linux-amd64 ai-cli
 
 Pick the archive that matches `uname -m`:
 
-| `uname -m` | Chip | Inner file |
-|------------|------|------------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64` |
-| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64` |
+| `uname -m` | Chip | Archive |
+|------------|------|---------|
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.0.tar.gz` |
+| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.1.0.tar.gz` |
 
 Apple Silicon:
 
 ```bash
-tar -xzf aioz-ai-cli-darwin-arm64-*.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -62,24 +67,14 @@ xattr -dr com.apple.quarantine ./ai-cli
 Intel:
 
 ```bash
-tar -xzf aioz-ai-cli-darwin-amd64-*.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
 mv aioz-ai-cli-darwin-amd64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
 Do not use the Intel archive on Apple Silicon.
-
-`version` prints the installed CLI (values change per release):
-
-```json
-{
-  "built": "…",
-  "commit": "…",
-  "error": null,
-  "version": "…"
-}
-```
 
 ## First run
 
@@ -113,23 +108,19 @@ Writes a new private-key JSON and prints the mnemonic once.
 
 Treat `privkey.json` and the mnemonic as **wallet secrets**. Use a **dedicated key for each node**. Keep an offline backup. Never paste them into websites, chats, or support tickets.
 
-Recover from 12 or 24 words (quote the phrase), or from a file:
+To restore an existing wallet, put the 12 or 24 words in a file:
 
 **Windows**
 
 ```powershell
-.\ai-cli.exe keytool recover "word1 word2 ... word12" --save-priv-key privkey.json
 .\ai-cli.exe keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
 ```
 
 **Linux and macOS**
 
 ```bash
-./ai-cli keytool recover "word1 word2 ... word12" --save-priv-key privkey.json
 ./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
 ```
-
-Wrong count: `{"error": "mnemonic has 11 words (too few); need 12 or 24"}`. Empty recover: `need mnemonic words or --mnemonic-file`.
 
 ### 2. Set a storage limit
 
@@ -182,7 +173,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 
 ```
 ╭─ AIOZ AI CLI ──────────────────────────────────────────╮
-│  CLI  …                                                │
+│  CLI  v0.1.0                                           │
 │  EVM  0xAbc0…def1                                      │
 │  Home ~/.local/share/aioz/ai-nodes/<uuid>              │
 ╰────────────────────────────────────────────────────────╯
@@ -359,10 +350,10 @@ Download the latest signed CLI and replace this binary. Most commands also check
 {
   "skipped": false,
   "newer": false,
-  "current": "…",
-  "current_commit": "…",
-  "remote": "…",
-  "remote_commit": "…",
+  "current": "v0.1.0",
+  "current_commit": "v0.1.0",
+  "remote": "v0.1.0",
+  "remote_commit": "v0.1.0",
   "note": "CLI is up to date"
 }
 ```
@@ -474,7 +465,8 @@ Prints `address_evm` and `address`. Never prints the private key.
 
 ## Security
 
-- Recover may take a quoted mnemonic; it can appear in shell history. `--mnemonic-file` avoids that. Never put `privkey.json` contents on the command line.
-- Never paste keys into chat, tickets, or websites.
-- `logs` redacts secrets it recognizes; the file on disk may still contain runtime noise — do not publish it.
-- This repo keeps **only the latest** release. A bad build is replaced by the next signed version; there is no tag rollback on GitHub.
+- Keep `privkey.json` and mnemonic files private. Do not commit them or paste them into chat, tickets, or websites.
+- Prefer `keytool recover --mnemonic-file` so the words are not stored in shell history.
+- Never put `privkey.json` contents on the command line.
+- `logs` redacts secrets it recognizes; do not publish the log file on disk.
+- One live node per wallet. Ctrl+C on `start` stops this wallet only.
