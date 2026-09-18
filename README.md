@@ -52,7 +52,7 @@ Pick the archive that matches `uname -m`:
 | `uname -m` | Chip | Archive |
 |------------|------|---------|
 | `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.0.tar.gz` |
-| `x86_64` | x86_64 | `aioz-ai-cli-darwin-amd64-0.1.0.tar.gz` |
+| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-0.1.0.tar.gz` |
 
 Apple Silicon:
 
@@ -67,9 +67,9 @@ xattr -dr com.apple.quarantine ./ai-cli
 x86_64:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
-mv aioz-ai-cli-darwin-amd64 ai-cli
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-x86_64-0.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-x86_64-0.1.0.tar.gz
+mv aioz-ai-cli-darwin-x86_64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
