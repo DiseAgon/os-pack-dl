@@ -34,7 +34,7 @@ ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 .\ai-cli.exe version
 ```
 
-`--save-priv-key privkey.json` writes into the current folder. `Access is denied` means that folder is not yours — `cd $env:USERPROFILE` and retry. Data is under `%LOCALAPPDATA%\AIOZ\ai-cli\`. The first `start` may show a Windows Firewall prompt; allow it for private networks.
+`--save-priv-key privkey.json` writes into the current folder. `Access is denied` means that folder is not yours — `cd $env:USERPROFILE` and retry. Data is under `%LOCALAPPDATA%\aioz\ai-cli\`. The first `start` may show a Windows Firewall prompt; allow it for private networks.
 
 ### Linux
 
@@ -152,8 +152,8 @@ Without `--home`, this wallet gets a UUID folder:
 | OS | Home |
 |----|------|
 | Linux | `~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/` |
-| Windows | `%LOCALAPPDATA%\AIOZ\ai-cli\ai-nodes\<uuid>\` |
-| macOS | `~/Library/Application Support/AIOZ/ai-cli/ai-nodes/<uuid>/` |
+| Windows | `%LOCALAPPDATA%\aioz\ai-cli\ai-nodes\<uuid>\` |
+| macOS | `~/Library/Application Support/aioz/ai-cli/ai-nodes/<uuid>/` |
 
 ### 3. Start
 
@@ -193,8 +193,8 @@ Log paths:
 | OS | `log_path` |
 |----|------------|
 | Linux | `~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log` |
-| Windows | `%LOCALAPPDATA%\AIOZ\ai-cli\logs\<uuid>\ai.log` |
-| macOS | `~/Library/Logs/AIOZ/ai-cli/<uuid>/ai.log` |
+| Windows | `%LOCALAPPDATA%\aioz\ai-cli\logs\<uuid>\ai.log` |
+| macOS | `~/Library/Logs/aioz/ai-cli/<uuid>/ai.log` |
 
 ## Commands
 
