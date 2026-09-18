@@ -4,6 +4,8 @@
 
 Supported platforms: Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64 (amd64). The node runtime and keytool are bundled in the CLI binary.
 
+This GitHub repository is the **production download host** (binaries + version-check only). Source stays on internal GitLab.
+
 Release notes for **v0.1.0** (first production release): [RELEASE.md](./RELEASE.md).
 
 ## Requirements
@@ -461,7 +463,7 @@ Prints `address_evm` and `address`. Never prints the private key.
 | `storage must be greater than 2 GB` | Same: N must be **greater than 2**. |
 | `storage limit must be a number of GB` | Pass a number (`10`), not `10GB` or `abc`. |
 | `mnemonic has N words` | Recover needs **12 or 24** words. |
-| `need mnemonic words or --mnemonic-file` | Quote the phrase or pass `--mnemonic-file`. |
+| `need mnemonic words or --mnemonic-file` | Pass `--mnemonic-file` with 12 or 24 words. |
 | `start does not take arguments` | Only flags (`--priv-key-file`). |
 | `--priv-key-file is required` | Pass the JSON you created with `keytool new`. |
 | `wallet_address already running` | Ctrl+C that wallet's `start`. One live node per key. |
