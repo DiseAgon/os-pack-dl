@@ -177,7 +177,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 │  Status            running                                           │
 │  CLI               v0.1.0                                            │
 │  PID               12345                                             │
-│  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/              │
+│  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/       │
 │  Storage           10 GB                                             │
 │  EVM               0xAbc0…def1                                       │
 │                                                                      │
