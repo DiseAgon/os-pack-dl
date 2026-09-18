@@ -2,15 +2,15 @@
 
 `ai-cli` is the command-line tool for running and managing an AIOZ AI Node. It creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics.
 
-Supported platforms: Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (amd64). The node runtime and keytool are bundled in the CLI binary.
+Supported platforms: Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64 (amd64). The node runtime and keytool are bundled in the CLI binary.
 
-This is production **v0.1.0**. Release notes are on the [GitHub Release](https://github.com/DiseAgon/os-pack-dl/releases/latest).
+Release notes for **v0.1.0** (first production release): [RELEASE.md](./RELEASE.md).
 
 ## Requirements
 
 - Windows 10 64-bit (amd64) or later
 - Ubuntu 20.04 64-bit (amd64) or later
-- macOS 12+ 64-bit, Apple Silicon (arm64) or Intel (amd64)
+- macOS 12+ 64-bit, Apple Silicon (arm64) or x86_64 (amd64)
 
 `start` prints a **card**, then **streams logs**. Other commands print indented JSON. Failures print `{"error": "…"}` on stdout (exit ≠ 0). Success JSON includes `"error": null`.
 
@@ -52,7 +52,7 @@ Pick the archive that matches `uname -m`:
 | `uname -m` | Chip | Archive |
 |------------|------|---------|
 | `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.0.tar.gz` |
-| `x86_64` | Intel | `aioz-ai-cli-darwin-amd64-0.1.0.tar.gz` |
+| `x86_64` | x86_64 | `aioz-ai-cli-darwin-amd64-0.1.0.tar.gz` |
 
 Apple Silicon:
 
@@ -64,7 +64,7 @@ xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
-Intel:
+x86_64:
 
 ```bash
 curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-amd64-0.1.0.tar.gz
@@ -74,7 +74,7 @@ xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
-Do not use the Intel archive on Apple Silicon.
+Do not use the x86_64 archive on Apple Silicon.
 
 ## First run
 
@@ -151,7 +151,7 @@ Without `--home`, this wallet gets a UUID folder:
 
 | OS | Home |
 |----|------|
-| Linux | `~/.local/share/aioz/ai-nodes/<uuid>/` |
+| Linux | `~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/` |
 | Windows | `%LOCALAPPDATA%\AIOZ\ai-cli\ai-nodes\<uuid>\` |
 | macOS | `~/Library/Application Support/AIOZ/ai-cli/ai-nodes/<uuid>/` |
 
@@ -177,7 +177,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 │  Status            running                                           │
 │  CLI               v0.1.0                                            │
 │  PID               12345                                             │
-│  Home              ~/.local/share/aioz/ai-nodes/<uuid>/              │
+│  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/              │
 │  Storage           10 GB                                             │
 │  EVM               0xAbc0…def1                                       │
 │                                                                      │
@@ -219,7 +219,7 @@ Whether this wallet's node process is running on this machine.
 ```json
 {
   "evm_address": "0xAbc0…def1",
-  "home": "~/.local/share/aioz/ai-nodes/<uuid>",
+  "home": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>",
   "log_path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
   "other_running": 0,
   "running": false
@@ -270,7 +270,7 @@ Snapshot of `ai.log` (last `--bytes`, default 32 KiB), not a live follow. Secret
 
 ```json
 {
-  "home": "~/.local/share/aioz/ai-nodes/<uuid>",
+  "home": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>",
   "log": "… redacted snapshot …",
   "path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
   "wallet": "0xAbc0…def1"
@@ -356,9 +356,9 @@ Download the latest signed CLI and replace this binary. Most commands also check
   "skipped": false,
   "newer": false,
   "current": "v0.1.0",
-  "current_commit": "v0.1.0",
+  "current_commit": "9c7209288573e56b1cd28fc6df0ddba17aec3038",
   "remote": "v0.1.0",
-  "remote_commit": "v0.1.0",
+  "remote_commit": "9c7209288573e56b1cd28fc6df0ddba17aec3038",
   "note": "CLI is up to date"
 }
 ```
@@ -423,7 +423,7 @@ Checks disk, runtime, wallet, GPU, and this wallet's log.
   "ok": true,
   "checks": [
     {"name": "os", "ok": true, "detail": "linux/amd64"},
-    {"name": "home", "ok": true, "detail": "~/.local/share/aioz/ai-nodes/<uuid>"},
+    {"name": "home", "ok": true, "detail": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>"},
     {"name": "disk", "ok": true, "detail": "100 GB free"},
     {"name": "runtime", "ok": true, "detail": "ok"},
     {"name": "wallet", "ok": true, "detail": "0xAbc0…def1"},
@@ -466,7 +466,7 @@ Prints `address_evm` and `address`. Never prints the private key.
 | `--priv-key-file is required` | Pass the JSON you created with `keytool new`. |
 | `wallet_address already running` | Ctrl+C that wallet's `start`. One live node per key. |
 | Inner archive file is `aioz-ai-cli-darwin-arm64`, not `ai-cli` | `mv` it as in the install steps. |
-| Intel binary on Apple Silicon (or the reverse) | Match `uname -m` to the table above. |
+| x86_64 binary on Apple Silicon (or the reverse) | Match `uname -m` to the table above. |
 
 ## Security
 
