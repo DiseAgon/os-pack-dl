@@ -4,9 +4,7 @@
 
 Supported platforms: Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64 (amd64). The node runtime and keytool are bundled in the CLI binary.
 
-This GitHub repository is the **production download host** (binaries + version-check only). Source stays on internal GitLab.
-
-Release notes for **v0.1.0** (first production release): [RELEASE.md](./RELEASE.md).
+Release notes for the **v0.1.2 development demo**: [GitHub release](https://github.com/DiseAgon/os-pack-dl/releases/tag/v0.1.2).
 
 ## Requirements
 
@@ -30,8 +28,8 @@ Work in **your** profile folder. PowerShell as that user, not Administrator.
 
 ```powershell
 cd $env:USERPROFILE
-curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.1.0.zip
-Expand-Archive -Path aioz-ai-cli-windows-amd64-0.1.0.zip -DestinationPath .
+curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.1.2.zip
+Expand-Archive -Path aioz-ai-cli-windows-amd64-0.1.2.zip -DestinationPath .
 ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 .\ai-cli.exe version
 ```
@@ -41,8 +39,8 @@ ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
 ### Linux
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-linux-amd64-0.1.0.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.1.2.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-0.1.2.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
@@ -53,14 +51,14 @@ Pick the archive that matches `uname -m`:
 
 | `uname -m` | Chip | Archive |
 |------------|------|---------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.0.tar.gz` |
-| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-0.1.0.tar.gz` |
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.2.tar.gz` |
+| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-0.1.2.tar.gz` |
 
 Apple Silicon:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-arm64-0.1.0.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.1.2.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-0.1.2.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -69,8 +67,8 @@ xattr -dr com.apple.quarantine ./ai-cli
 x86_64:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-x86_64-0.1.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-x86_64-0.1.0.tar.gz
+curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-x86_64-0.1.2.tar.gz
+tar -xzf aioz-ai-cli-darwin-x86_64-0.1.2.tar.gz
 mv aioz-ai-cli-darwin-x86_64 ai-cli
 xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
@@ -177,7 +175,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 ╭─ node ───────────────────────────────────────────────────────────────╮
 │                                                                      │
 │  Status            running                                           │
-│  CLI               v0.1.0                                            │
+│  CLI               0.1.2                                             │
 │  PID               12345                                             │
 │  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/       │
 │  Storage           10 GB                                             │
@@ -357,10 +355,10 @@ Download the latest signed CLI and replace this binary. Most commands also check
 {
   "skipped": false,
   "newer": false,
-  "current": "v0.1.0",
-  "current_commit": "9c7209288573e56b1cd28fc6df0ddba17aec3038",
-  "remote": "v0.1.0",
-  "remote_commit": "9c7209288573e56b1cd28fc6df0ddba17aec3038",
+  "current": "0.1.2",
+  "current_commit": "ecf31670eecfe1cb37f6951000170e1572877710",
+  "remote": "0.1.2",
+  "remote_commit": "ecf31670eecfe1cb37f6951000170e1572877710",
   "note": "CLI is up to date"
 }
 ```
@@ -463,7 +461,7 @@ Prints `address_evm` and `address`. Never prints the private key.
 | `storage must be greater than 2 GB` | Same: N must be **greater than 2**. |
 | `storage limit must be a number of GB` | Pass a number (`10`), not `10GB` or `abc`. |
 | `mnemonic has N words` | Recover needs **12 or 24** words. |
-| `need mnemonic words or --mnemonic-file` | Pass `--mnemonic-file` with 12 or 24 words. |
+| `need mnemonic words or --mnemonic-file` | Quote the phrase or pass `--mnemonic-file`. |
 | `start does not take arguments` | Only flags (`--priv-key-file`). |
 | `--priv-key-file is required` | Pass the JSON you created with `keytool new`. |
 | `wallet_address already running` | Ctrl+C that wallet's `start`. One live node per key. |
