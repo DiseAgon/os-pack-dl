@@ -164,9 +164,13 @@ Treat `privkey.json` and the mnemonic as **wallet secrets**. Use a **dedicated k
 ./ai-cli keytool new --mnemonic-word 24 --save-priv-key privkey.json
 ```
 
-`new` refuses an existing output file unless you pass `--force`. Recover is under [Recover a key](#recover-a-key).
+`new` refuses an existing output file unless you pass `--force`. Next, [set a storage limit](#set-a-storage-limit), then [start the node](#start-the-node). Recover is under [Recover a key](#recover-a-key).
 
-### 2. Set a storage limit
+## Commands
+
+Wallet commands take `--priv-key-file` unless noted.
+
+### Set a storage limit
 
 Required **before** `start`. The value must be **greater than 2 GB**. There is no 2 GB default. Bare `storage` prints help.
 
@@ -199,7 +203,7 @@ Without `--home`, this wallet gets a UUID folder:
 | Windows | `%LOCALAPPDATA%\aioz\ai-cli\ai-nodes\<uuid>\` |
 | macOS | `~/Library/Application Support/aioz/ai-cli/ai-nodes/<uuid>/` |
 
-### 3. Start
+### Start the node
 
 Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this wallet** only. There is no `stop` command. `--priv-key-file` is required.
 
@@ -214,6 +218,8 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 ```bash
 ./ai-cli start --priv-key-file privkey.json
 ```
+
+Response:
 
 ```
 ╭─ node ───────────────────────────────────────────────────────────────╮
@@ -285,10 +291,6 @@ Log paths:
 | Linux | `~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log` |
 | Windows | `%LOCALAPPDATA%\aioz\ai-cli\logs\<uuid>\ai.log` |
 | macOS | `~/Library/Logs/aioz/ai-cli/<uuid>/ai.log` |
-
-## Commands
-
-Wallet commands take `--priv-key-file` unless noted.
 
 ### Storage show
 
