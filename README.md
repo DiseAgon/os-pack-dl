@@ -2,14 +2,15 @@
 
 `ai-cli` is the command-line tool for running and managing an AIOZ AI Node. It creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics.
 
-Production **v1.0.0** supports Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64. Each archive bundles a matching node runtime and keytool. Linux ARM64 and FreeBSD amd64 are not in this release. Linux ARM 32-bit is unsupported.
+Production **v1.0.0** supports Linux amd64, Linux ARM64, FreeBSD amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64. Each archive bundles the node runtime and a keytool for that OS. Linux ARM 32-bit is unsupported.
 
-Download one of the four archives below. [Release v1.0.0](https://github.com/DiseAgon/os-pack-dl/releases/tag/v1.0.0).
+Download the archive for your OS below. [Release v1.0.0](https://github.com/DiseAgon/os-pack-dl/releases/tag/v1.0.0).
 
 ## Requirements
 
 - Windows 10 64-bit (amd64) or later
-- Ubuntu 20.04 64-bit (amd64) or later
+- Ubuntu 20.04 64-bit, x86_64 or ARM64 (`aarch64`)
+- FreeBSD amd64
 - macOS 12+ 64-bit, Apple Silicon (arm64) or x86_64 (amd64)
 
 `start` prints a **card**, then **streams logs**. Other commands print indented JSON. Failures print `{"error": "…"}` on stdout (exit ≠ 0). Success JSON includes `"error": null`.
@@ -49,13 +50,37 @@ Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 
 ### Linux amd64
 
-Run `uname -m` first. Continue only when it prints `x86_64`. This release has no Linux ARM64 archive.
+Run `uname -m` first. Continue only when it prints `x86_64`.
 
 ```bash
 uname -m
 curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-linux-amd64-1.0.0.tar.gz
 tar -xzf aioz-ai-cli-linux-amd64-1.0.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
+./ai-cli version
+```
+
+### Linux ARM64
+
+Run `uname -m` first. Continue only when it prints `aarch64`. Do not use the amd64 archive on this machine.
+
+```bash
+uname -m
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-linux-arm64-1.0.0.tar.gz
+tar -xzf aioz-ai-cli-linux-arm64-1.0.0.tar.gz
+mv aioz-ai-cli-linux-arm64 ai-cli
+./ai-cli version
+```
+
+### FreeBSD amd64
+
+Run `uname -sm` first. Continue only when it prints `FreeBSD amd64`.
+
+```sh
+uname -sm
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-freebsd-amd64-1.0.0.tar.gz
+tar -xzf aioz-ai-cli-freebsd-amd64-1.0.0.tar.gz
+mv aioz-ai-cli-freebsd-amd64 ai-cli
 ./ai-cli version
 ```
 
