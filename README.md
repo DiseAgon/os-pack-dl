@@ -2,9 +2,9 @@
 
 `ai-cli` is the command-line tool for running and managing an AIOZ AI Node. It creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics.
 
-This demo supports Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (x86_64). Each archive bundles a matching node runtime and keytool. Linux ARM64 and FreeBSD amd64 are pending runtime validation; Linux ARM 32-bit is unsupported.
+Production **v1.0.0** supports Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64. Each archive bundles a matching node runtime and keytool. Linux ARM64 and FreeBSD amd64 are not in this release. Linux ARM 32-bit is unsupported.
 
-**Current development demo: v0.13.0.** Download only the four published archives below. The official v1.0.0 release is being prepared separately. [Demo release and files](https://github.com/DiseAgon/os-pack-dl/releases/tag/v0.13.0).
+Download one of the four archives below. [Release v1.0.0](https://github.com/DiseAgon/os-pack-dl/releases/tag/v1.0.0).
 
 ## Requirements
 
@@ -22,14 +22,25 @@ Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 Download the archive for your OS, extract it, and rename the inner file to `ai-cli` or `ai-cli.exe`.
 
+`version` prints JSON. `commit` is the git SHA of this build, not the version tag.
+
+```json
+{
+  "built": "2026-09-24T05:24:01Z",
+  "commit": "27930ba2dd77e32b49fc4a1da360f10fab8ab8a7",
+  "error": null,
+  "version": "1.0.0"
+}
+```
+
 ### Windows
 
 Work in **your** profile folder. PowerShell as that user, not Administrator.
 
 ```powershell
 cd $env:USERPROFILE
-curl.exe -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-windows-amd64-0.13.0.zip
-Expand-Archive -LiteralPath aioz-ai-cli-windows-amd64-0.13.0.zip -DestinationPath . -Force
+curl.exe -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-windows-amd64-1.0.0.zip
+Expand-Archive -LiteralPath aioz-ai-cli-windows-amd64-1.0.0.zip -DestinationPath . -Force
 Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 .\ai-cli.exe version
 ```
@@ -38,12 +49,12 @@ Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 
 ### Linux amd64
 
-Run `uname -m` first. Continue only when it prints `x86_64`; this demo has no Linux ARM64 archive yet.
+Run `uname -m` first. Continue only when it prints `x86_64`. This release has no Linux ARM64 archive.
 
 ```bash
 uname -m
-curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-linux-amd64-0.13.0.tar.gz
-tar -xzf aioz-ai-cli-linux-amd64-0.13.0.tar.gz
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-linux-amd64-1.0.0.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-1.0.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
@@ -54,14 +65,14 @@ Pick the archive that matches `uname -m`:
 
 | `uname -m` | Chip | Archive |
 |------------|------|---------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.13.0.tar.gz` |
-| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-0.13.0.tar.gz` |
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-1.0.0.tar.gz` |
+| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-1.0.0.tar.gz` |
 
 Apple Silicon:
 
 ```bash
-curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-darwin-arm64-0.13.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-arm64-0.13.0.tar.gz
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-darwin-arm64-1.0.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-1.0.0.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
 ./ai-cli version
 ```
@@ -69,8 +80,8 @@ mv aioz-ai-cli-darwin-arm64 ai-cli
 x86_64:
 
 ```bash
-curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-darwin-x86_64-0.13.0.tar.gz
-tar -xzf aioz-ai-cli-darwin-x86_64-0.13.0.tar.gz
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-darwin-x86_64-1.0.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-x86_64-1.0.0.tar.gz
 mv aioz-ai-cli-darwin-x86_64 ai-cli
 ./ai-cli version
 ```
@@ -176,7 +187,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 ╭─ node ───────────────────────────────────────────────────────────────╮
 │                                                                      │
 │  Status            running                                           │
-│  CLI               0.13.0                                             │
+│  CLI               1.0.0                                             │
 │  PID               12345                                             │
 │  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/       │
 │  Storage           10 GB                                             │
@@ -356,10 +367,10 @@ Download the latest signed CLI and replace this binary. Most commands also check
 {
   "skipped": false,
   "newer": false,
-  "current": "0.13.0",
-  "current_commit": "c3bb2aeb671567247875ebcf9ec4d08930cb4d64",
-  "remote": "0.13.0",
-  "remote_commit": "c3bb2aeb671567247875ebcf9ec4d08930cb4d64",
+  "current": "1.0.0",
+  "current_commit": "27930ba2dd77e32b49fc4a1da360f10fab8ab8a7",
+  "remote": "1.0.0",
+  "remote_commit": "27930ba2dd77e32b49fc4a1da360f10fab8ab8a7",
   "note": "CLI is up to date"
 }
 ```
