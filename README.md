@@ -48,29 +48,34 @@ Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 
 `--save-priv-key privkey.json` writes into the current folder. `Access is denied` means that folder is not yours — `cd $env:USERPROFILE` and retry. Data is under `%LOCALAPPDATA%\aioz\ai-cli\`. The first `start` may show a Windows Firewall prompt; allow it for private networks.
 
-### Linux amd64
+### Linux
 
-Run `uname -m` first. Continue only when it prints `x86_64`.
+Pick the archive that matches `uname -m`:
+
+| `uname -m` | CPU | Archive |
+|------------|-----|---------|
+| `x86_64` | amd64 | `aioz-ai-cli-linux-amd64-1.0.0.tar.gz` |
+| `aarch64` | ARM64 | `aioz-ai-cli-linux-arm64-1.0.0.tar.gz` |
+
+x86_64:
 
 ```bash
-uname -m
 curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-linux-amd64-1.0.0.tar.gz
 tar -xzf aioz-ai-cli-linux-amd64-1.0.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
 
-### Linux ARM64
-
-Run `uname -m` first. Continue only when it prints `aarch64`. Do not use the amd64 archive on this machine.
+aarch64:
 
 ```bash
-uname -m
 curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.0.0/aioz-ai-cli-linux-arm64-1.0.0.tar.gz
 tar -xzf aioz-ai-cli-linux-arm64-1.0.0.tar.gz
 mv aioz-ai-cli-linux-arm64 ai-cli
 ./ai-cli version
 ```
+
+Do not use the x86_64 archive on ARM64. Linux ARM 32-bit is unsupported.
 
 ### FreeBSD amd64
 
