@@ -134,6 +134,22 @@ To restore an existing wallet, put the 12 or 24 words in a file:
 ./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
 ```
 
+`new` uses 12 words. For 24 words:
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool new --mnemonic-word 24 --save-priv-key privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool new --mnemonic-word 24 --save-priv-key privkey.json
+```
+
+A quoted 12- or 24-word phrase also works with `keytool recover`. Prefer `--mnemonic-file` so the words stay out of shell history. `new` and `recover` refuse an existing output file unless you pass `--force`.
+
 ### 2. Set a storage limit
 
 Required **before** `start`. The value must be **greater than 2 GB**. There is no 2 GB default. Bare `storage` prints help.
@@ -188,15 +204,57 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 │                                                                      │
 │  Status            running                                           │
 │  CLI               1.0.0                                             │
+│  Update            CLI is up to date                                 │
 │  PID               12345                                             │
 │  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/       │
 │  Storage           10 GB                                             │
 │  EVM               0xAbc0…def1                                       │
 │                                                                      │
+│  ⚠                 streaming logs; Ctrl+C to stop the node           │
+│                                                                      │
 ╰──────────────────────────────────────────────────────────────────────╯
 ```
 
 Logs then stream in the same terminal.
+
+`ai-cli --json start` prints one JSON object and does not stream logs unless you also pass `--follow` (logs then go to stderr). Paths below are placeholders. `data_dir` is the node home. On this production build, `update.note` is `CLI is up to date` when the signed manifest is reachable.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe --json start --priv-key-file privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli --json start --priv-key-file privkey.json
+```
+
+```json
+{
+  "data_dir": "<node-home>",
+  "error": null,
+  "evm_address": "0xAbc0…def1",
+  "home": "<node-home>",
+  "log_path": "<log-path>",
+  "pid": 12345,
+  "pid_path": "<pid-path>",
+  "running": true,
+  "storage_bytes": 10000000000,
+  "update": {
+    "skipped": false,
+    "newer": false,
+    "current": "1.0.0",
+    "current_commit": "27930ba2dd77e32b49fc4a1da360f10fab8ab8a7",
+    "remote": "1.0.0",
+    "remote_commit": "27930ba2dd77e32b49fc4a1da360f10fab8ab8a7",
+    "note": "CLI is up to date"
+  }
+}
+```
+
+Ctrl+C prints a second object: `{"error": null, "running": 0, "status": "stopped"}`.
 
 Failures (missing key, no storage limit, extra args) print `{"error": "…"}` on stdout.
 
@@ -460,6 +518,37 @@ Prints `address_evm` and `address`. Never prints the private key.
 
 ```bash
 ./ai-cli keytool show --priv-key-file privkey.json
+```
+
+```json
+{
+  "address": "aioz1…",
+  "address_evm": "0xAbc0…def1",
+  "error": null
+}
+```
+
+### Export a key copy
+
+Copies `--priv-key-file` to `--out`. The key is never printed. An existing `--out` file is replaced.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool export --priv-key-file privkey.json --out backup-privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool export --priv-key-file privkey.json --out backup-privkey.json
+```
+
+```json
+{
+  "error": null,
+  "out": "backup-privkey.json"
+}
 ```
 
 ## Troubleshooting
