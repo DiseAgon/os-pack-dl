@@ -150,20 +150,6 @@ Writes a new private-key JSON and prints the mnemonic once.
 
 Treat `privkey.json` and the mnemonic as **wallet secrets**. Use a **dedicated key for each node**. Keep an offline backup. Never paste them into websites, chats, or support tickets.
 
-To restore an existing wallet, put the 12 or 24 words in a file:
-
-**Windows**
-
-```powershell
-.\ai-cli.exe keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
-```
-
 `new` uses 12 words. For 24 words:
 
 **Windows**
@@ -178,7 +164,7 @@ To restore an existing wallet, put the 12 or 24 words in a file:
 ./ai-cli keytool new --mnemonic-word 24 --save-priv-key privkey.json
 ```
 
-A quoted 12- or 24-word phrase also works with `keytool recover`. Prefer `--mnemonic-file` so the words stay out of shell history. `new` and `recover` refuse an existing output file unless you pass `--force`.
+`new` refuses an existing output file unless you pass `--force`. Recover is under [Recover a key](#recover-a-key).
 
 ### 2. Set a storage limit
 
@@ -243,11 +229,14 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 │  ⚠                 streaming logs; Ctrl+C to stop the node           │
 │                                                                      │
 ╰──────────────────────────────────────────────────────────────────────╯
+...
 ```
 
-Logs then stream in the same terminal.
+Logs then stream in the same terminal. The `...` means the command is still running.
 
-`ai-cli --json start` prints one JSON object and does not stream logs unless you also pass `--follow` (logs then go to stderr). Paths below are placeholders. `data_dir` is the node home. On this production build, `update.note` is `CLI is up to date` when the signed manifest is reachable.
+Response:
+
+Example output from production v1.0.0. Paths, PID, and the wallet address are placeholders. `data_dir` is the node home. `update.note` is `CLI is up to date` when the signed manifest is reachable. The command keeps running after this object. `ai-cli --json start` does not stream logs unless you also pass `--follow` (logs then go to stderr).
 
 **Windows**
 
@@ -282,6 +271,7 @@ Logs then stream in the same terminal.
     "note": "CLI is up to date"
   }
 }
+...
 ```
 
 Ctrl+C prints a second object: `{"error": null, "running": 0, "status": "stopped"}`.
@@ -299,34 +289,6 @@ Log paths:
 ## Commands
 
 Wallet commands take `--priv-key-file` unless noted.
-
-### Status
-
-Whether this wallet's node process is running on this machine.
-
-**Windows**
-
-```powershell
-.\ai-cli.exe status --priv-key-file privkey.json
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli status --priv-key-file privkey.json
-```
-
-```json
-{
-  "evm_address": "0xAbc0…def1",
-  "home": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>",
-  "log_path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
-  "other_running": 0,
-  "running": false
-}
-```
-
-`ai-cli status --all` lists every indexed home (`homes`, `nodes`, `running`). No `--priv-key-file`.
 
 ### Storage show
 
@@ -370,6 +332,7 @@ Snapshot of `ai.log` (last `--bytes`, default 32 KiB), not a live follow. Secret
 
 ```json
 {
+  "error": null,
   "home": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>",
   "log": "… redacted snapshot …",
   "path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
@@ -464,6 +427,57 @@ Download the latest signed CLI and replace this binary. Most commands also check
 ```
 
 `update --check-only` prints status and does not download. `update --stop` stops every node on this machine first, then replaces the binary.
+
+### Status
+
+Whether this wallet's node process is running on this machine.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe status --priv-key-file privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli status --priv-key-file privkey.json
+```
+
+Response:
+
+```json
+{
+  "error": null,
+  "evm_address": "0xAbc0…def1",
+  "home": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>",
+  "log_path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
+  "other_running": 0,
+  "pid": 12345,
+  "pid_path": "~/.local/state/aioz/ai-cli/<uuid>/node.pid",
+  "running": true
+}
+```
+
+`status --all` lists every indexed home. No `--priv-key-file`.
+
+```json
+{
+  "error": null,
+  "homes": 1,
+  "nodes": [
+    {
+      "evm_address": "0xAbc0…def1",
+      "home": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>",
+      "log_path": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log",
+      "pid": 12345,
+      "pid_path": "~/.local/state/aioz/ai-cli/<uuid>/node.pid",
+      "running": true
+    }
+  ],
+  "running": 1
+}
+```
 
 ### Stats
 
@@ -580,6 +594,36 @@ Copies `--priv-key-file` to `--out`. The key is never printed. An existing `--ou
   "out": "backup-privkey.json"
 }
 ```
+
+### Recover a key
+
+A 12-word phrase is the usual case. A 24-word phrase also works. Quote it, or pass `--mnemonic-file` so the words stay out of shell history.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool recover "word1 ... word12" --save-priv-key privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool recover "word1 ... word12" --save-priv-key privkey.json
+```
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+```
+
+`recover` refuses an existing output file unless you pass `--force`.
 
 ## Troubleshooting
 
