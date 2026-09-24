@@ -2,9 +2,9 @@
 
 `ai-cli` is the command-line tool for running and managing an AIOZ AI Node. It creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics.
 
-Supported platforms: Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64 (amd64). The node runtime and keytool are bundled in the CLI binary.
+This demo supports Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS Intel (x86_64). Each archive bundles a matching node runtime and keytool. Linux ARM64 and FreeBSD amd64 are pending runtime validation; Linux ARM 32-bit is unsupported.
 
-Release notes for the **v0.1.2 development demo**: [GitHub release](https://github.com/DiseAgon/os-pack-dl/releases/tag/v0.1.2).
+**Current development demo: v0.13.0.** Download only the four published archives below. The official v1.0.0 release is being prepared separately. [Demo release and files](https://github.com/DiseAgon/os-pack-dl/releases/tag/v0.13.0).
 
 ## Requirements
 
@@ -28,19 +28,22 @@ Work in **your** profile folder. PowerShell as that user, not Administrator.
 
 ```powershell
 cd $env:USERPROFILE
-curl.exe -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-windows-amd64-0.1.2.zip
-Expand-Archive -Path aioz-ai-cli-windows-amd64-0.1.2.zip -DestinationPath .
-ren aioz-ai-cli-windows-amd64.exe ai-cli.exe
+curl.exe -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-windows-amd64-0.13.0.zip
+Expand-Archive -LiteralPath aioz-ai-cli-windows-amd64-0.13.0.zip -DestinationPath . -Force
+Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 .\ai-cli.exe version
 ```
 
 `--save-priv-key privkey.json` writes into the current folder. `Access is denied` means that folder is not yours — `cd $env:USERPROFILE` and retry. Data is under `%LOCALAPPDATA%\aioz\ai-cli\`. The first `start` may show a Windows Firewall prompt; allow it for private networks.
 
-### Linux
+### Linux amd64
+
+Run `uname -m` first. Continue only when it prints `x86_64`; this demo has no Linux ARM64 archive yet.
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-linux-amd64-0.1.2.tar.gz
-tar -xzf aioz-ai-cli-linux-amd64-0.1.2.tar.gz
+uname -m
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-linux-amd64-0.13.0.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-0.13.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
@@ -51,26 +54,24 @@ Pick the archive that matches `uname -m`:
 
 | `uname -m` | Chip | Archive |
 |------------|------|---------|
-| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.1.2.tar.gz` |
-| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-0.1.2.tar.gz` |
+| `arm64` | Apple Silicon (M1–M4) | `aioz-ai-cli-darwin-arm64-0.13.0.tar.gz` |
+| `x86_64` | x86_64 | `aioz-ai-cli-darwin-x86_64-0.13.0.tar.gz` |
 
 Apple Silicon:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-arm64-0.1.2.tar.gz
-tar -xzf aioz-ai-cli-darwin-arm64-0.1.2.tar.gz
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-darwin-arm64-0.13.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-0.13.0.tar.gz
 mv aioz-ai-cli-darwin-arm64 ai-cli
-xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
 x86_64:
 
 ```bash
-curl -LO https://github.com/DiseAgon/os-pack-dl/releases/latest/download/aioz-ai-cli-darwin-x86_64-0.1.2.tar.gz
-tar -xzf aioz-ai-cli-darwin-x86_64-0.1.2.tar.gz
+curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v0.13.0/aioz-ai-cli-darwin-x86_64-0.13.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-x86_64-0.13.0.tar.gz
 mv aioz-ai-cli-darwin-x86_64 ai-cli
-xattr -dr com.apple.quarantine ./ai-cli
 ./ai-cli version
 ```
 
@@ -175,7 +176,7 @@ Starts this wallet's node. Prints a card, then streams logs. Ctrl+C stops **this
 ╭─ node ───────────────────────────────────────────────────────────────╮
 │                                                                      │
 │  Status            running                                           │
-│  CLI               0.1.2                                             │
+│  CLI               0.13.0                                             │
 │  PID               12345                                             │
 │  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/       │
 │  Storage           10 GB                                             │
@@ -355,10 +356,10 @@ Download the latest signed CLI and replace this binary. Most commands also check
 {
   "skipped": false,
   "newer": false,
-  "current": "0.1.2",
-  "current_commit": "ecf31670eecfe1cb37f6951000170e1572877710",
-  "remote": "0.1.2",
-  "remote_commit": "ecf31670eecfe1cb37f6951000170e1572877710",
+  "current": "0.13.0",
+  "current_commit": "c3bb2aeb671567247875ebcf9ec4d08930cb4d64",
+  "remote": "0.13.0",
+  "remote_commit": "c3bb2aeb671567247875ebcf9ec4d08930cb4d64",
   "note": "CLI is up to date"
 }
 ```
