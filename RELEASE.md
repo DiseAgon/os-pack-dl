@@ -1,22 +1,32 @@
-# v0.1.0
+# v1.1.0
 
-First production release of `ai-cli`, the CLI for running and managing an AIOZ AI Node.
+Production release of AIOZ AI CLI with the newly supplied Ainode 2.41 payloads. The CLI, node runtime, and matching keytool are bundled in each platform archive.
 
 ## Highlights
 
-- Create and recover a node wallet, set a storage cap, and start the node
-- Status, logs, rewards, stats, and diagnostics
-- JSON on stdout for automation; `start` is interactive by default (card + live logs)
-- Linux, Windows, and macOS (Apple Silicon and x86_64)
-- Node runtime and keytool are bundled in the CLI binary
+### New features
+
+- `keytool encrypt`, `keytool decrypt`, and `keytool sign` support private-key armor and signing. Keytool JSON now uses the DePIN fields `address`, `address_hex`, `pub_key`, `priv_key`, and `priv_armor` where applicable.
+- `reward balance` reports total earned, total withdrawn, and remaining balance; `reward task` groups earnings by task type; `reward withdraw history` lists previous withdrawals.
+- `status` reports node state, CPU/GPU use, and measured storage. `status --all` adds a fresh local machine sample and every indexed wallet, including stopped wallets. `doctor` adds hardware details for machine diagnostics.
+- `clear --priv-key-file` removes one node home; `clear --all` removes every indexed home after confirmation. Private-key files are retained. `storage limit` confirms the updated allocation in JSON.
+- Production starts Ainode with dynamic `-wd`, `-dc`, and `--cli-run`; one-shot Ainode queries use `--cli` before the command flag. The production build omits the demo hub/mode arguments and hidden development flags.
+
+### Bug fixes
+
+- `keytool recover` succeeds when the sidecar omits optional secrets; it writes the recovered private-key file without a misleading error. Recovery JSON does not echo the mnemonic.
+- `keytool new` and `keytool recover` now honor `--force` when replacing an existing output file.
+- Windows runtime launch preserves NVIDIA driver paths.
 
 ## Supported platforms
 
-- Linux amd64
+- Linux amd64 (`x86_64`)
 - Windows amd64
 - macOS Apple Silicon (arm64)
-- macOS x86_64 (amd64)
+- macOS Intel (x86_64)
+
+Linux ARM64 and FreeBSD packages are temporarily omitted from v1.1.0. Choose the archive matching your OS and CPU. Each archive contains one production CLI executable. The signed `manifest.json` contains SHA256 checksums for the four archives and the source commit `ea18a6d8ea298db58706b9d10ca1a73f671089ca`.
 
 ## Documentation
 
-Install, first run, and the full command reference: the [README](./README.md).
+Install steps and complete example JSON outputs: [README](./README.md) and the [operator guide](./docs/aioz-ai-cli.md). The CLI source remains on internal GitLab.
