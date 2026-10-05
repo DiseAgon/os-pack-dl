@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIOZ AI CLI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nextra-primary-hue: 212deg;
+    --bg: #FFFCFB;
+    --sidebar: #FFFCFB;
+    --nav: #ffffff;
+    --text: #1D1D1F;
+    --heading: #1D1D1F;
+    --muted: #424141;
+    --border: #1D1D1F;
+    --hairline: #EAEAEA;
+    --link: hsl(212deg 100% 39%);
+    --teal: #1AC69C;
+    --blue: #3FA4FF;
+    --purple: #9214B1;
+    --lavender: #C478FF;
+    --code-bg: rgba(29, 29, 31, 0.03);
+    --code-fg: #1D1D1F;
+    --pre-bg: #1D1D1F;
+    --pre-fg: #C478FF;
+    --term-bg: #1D1D1F;
+    --term-fg: #EAEAEA;
+    --callout-bg: #F6F1EE;
+    --callout-bd: #1AC69C;
+    --callout-fg: #1D1D1F;
+    --os: #9214B1;
+  }
+  * { box-sizing: border-box; }
+  html {
+    scroll-padding-top: calc(4.5rem + 16px);
+  }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: "neue-montreal", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 18px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .topnav {
+    position: sticky; top: 0; z-index: 20;
+    height: 4.5rem;
+    background: var(--nav);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px;
+    padding: 0 24px;
+  }
+  .topnav .mark {
+    width: 10px; height: 10px; border-radius: 99px;
+    background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 55%, var(--purple) 100%);
+    flex: 0 0 auto;
+  }
+  .topnav .brand { font-weight: 700; font-style: italic; color: var(--heading); font-size: 17px; letter-spacing: -0.03em; }
+  .topnav .sep { color: #9ca3af; }
+  .topnav .crumb { color: var(--muted); font-size: 14px; }
+  .layout { display: grid; grid-template-columns: 18rem minmax(0, 1fr); min-height: calc(100vh - 4.5rem); }
+  aside {
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    padding: 28px 18px 48px;
+    position: sticky; top: 4.5rem; height: calc(100vh - 4.5rem); overflow: auto;
+  }
+  aside .brand { font-weight: 600; color: var(--heading); font-size: 15px; }
+  aside .crumb { color: var(--muted); font-size: 12px; margin: 4px 0 22px; }
+  aside a {
+    display: block; color: var(--muted); text-decoration: none;
+    padding: 6px 10px; border-radius: 8px; font-size: 14px;
+  }
+  aside a:hover { color: var(--purple); background: hsl(var(--nextra-primary-hue) 100% 39% / 0.05); }
+  aside a.l2 { font-weight: 600; color: var(--heading); margin-top: 12px; }
+  aside a.l2:hover { color: var(--purple); }
+  aside a.l3 { padding-left: 18px; }
+  aside a.l3:hover { color: var(--purple); }
+  main {
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+    padding: 40px 40px 60vh;
+  }
+  h1, h2, h3 { scroll-margin-top: calc(4.5rem + 16px); }
+  h1 { color: var(--heading); font-size: 2.15rem; font-weight: 600; letter-spacing: -0.03em; margin: 0 0 18px; padding-bottom: 14px; line-height: 1.25; border-bottom: 1px solid var(--hairline); }
+  h2 { color: var(--heading); font-size: 1.75rem; font-weight: 500; letter-spacing: -0.02em; margin: 40px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
+  h3 { color: var(--heading); font-size: 1.35rem; font-weight: 500; margin: 32px 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--hairline); }
+  .hash { margin-left: 8px; color: var(--lavender); text-decoration: none; font-weight: 500; opacity: 0; }
+  h1:hover .hash, h2:hover .hash, h3:hover .hash, .hash:hover, .hash:focus { opacity: 1; color: var(--purple); }
+  p { margin: 0 0 14px; }
+  ul { margin: 0 0 16px; padding-left: 1.25rem; }
+  li { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 18px; border: 1px solid var(--border); }
+  th, td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; vertical-align: top; }
+  th { font-weight: 600; }
+  a { color: var(--link); }
+  code {
+    font-family: "fraktion-mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9375rem;
+    background: var(--code-bg); color: var(--code-fg);
+    border: 1px solid rgba(29, 29, 31, 0.04);
+    padding: 0.12em 0.25em; border-radius: 6px;
+  }
+  pre {
+    background: var(--pre-bg); color: var(--pre-fg);
+    border: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 10px 0 18px;
+  }
+  pre code {
+    background: none; padding: 0; border: 0; color: inherit;
+    font-size: 0.875rem; line-height: 1.55;
+    display: block;
+    min-width: 100%;
+  }
+  pre.cmd code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  pre.terminal { background: var(--term-bg); color: var(--term-fg); }
+  pre.terminal code {
+    color: var(--term-fg);
+    white-space: pre;
+    font-variant-ligatures: none;
+    font-size: 13px;
+    line-height: 1.45;
+    width: max-content;
+    min-width: 100%;
+  }
+  .os-label {
+    color: var(--os); font-weight: 600; font-size: 15px;
+    letter-spacing: 0.01em; margin: 18px 0 8px;
+  }
+  .callout {
+    background: var(--callout-bg); border: 1px solid var(--hairline);
+    border-left: 3px solid var(--callout-bd);
+    border-radius: 12px; padding: 12px 16px 6px; margin: 16px 0 20px;
+    color: var(--callout-fg);
+  }
+  .callout-title { font-weight: 700; margin: 0 0 8px; text-transform: uppercase; font-size: 12px; letter-spacing: 0.06em; color: var(--purple); }
+  .callout code { background: rgba(29, 29, 31, 0.04); color: var(--heading); }
+  strong { color: var(--heading); }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: relative; top: 0; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    main { padding: 28px 20px 64px; }
+  }
+</style>
+</head>
+<body>
+<header class="topnav">
+  <span class="mark" aria-hidden="true"></span>
+  <span class="brand">AIOZ Network</span>
+  <span class="sep">/</span>
+  <span class="crumb">Docs · AI CLI</span>
+</header>
+<div class="layout">
+  <aside>
+    <div class="brand">AIOZ AI CLI</div>
+    <div class="crumb">Operator guide · v1.1.0</div>
+    <a class="l2" href="#what-is-aioz-ai-cli">What is AIOZ AI CLI?</a><a class="l2" href="#requirements">Requirements</a><a class="l2" href="#getting-started">Getting started</a><a class="l3" href="#windows">Windows</a><a class="l3" href="#macos-and-linux">macOS and Linux</a><a class="l2" href="#usage">Usage</a><a class="l3" href="#start-the-node">Start the node</a><a class="l3" href="#view-node-status">View node status</a><a class="l3" href="#clear-a-node-home">Clear a node home</a><a class="l3" href="#set-storage-limit">Set storage limit</a><a class="l3" href="#view-storage">View storage</a><a class="l3" href="#view-reward">View reward</a><a class="l3" href="#reward-by-task">Reward by task</a><a class="l3" href="#withdraw-history">Withdraw history</a><a class="l3" href="#withdraw-reward">Withdraw reward</a><a class="l3" href="#recover-private-key-from-mnemonic-phrase">Recover private key from mnemonic phrase</a><a class="l3" href="#keytool-usage">Keytool usage</a><a class="l3" href="#encrypt-decrypt-and-sign">Encrypt, decrypt, and sign</a><a class="l3" href="#errors">Errors</a><a class="l3" href="#update">Update</a><a class="l3" href="#stats">Stats</a><a class="l3" href="#logs">Logs</a><a class="l3" href="#doctor">Doctor</a><a class="l3" href="#json-start">JSON start</a>
+  </aside>
+  <main>
+<h1 id="aioz-ai-cli">AIOZ AI CLI</h1>
+<p>The command-line tool for running and managing an AIOZ AI Node. This guide matches production <strong>v1.1.0</strong> published at <a href="https://github.com/DiseAgon/os-pack-dl/releases/tag/v1.1.0">GitHub</a>. It bundles Ainode 2.41 for Linux amd64, Windows amd64, macOS arm64, and macOS x86_64.</p>
+<h2 id="what-is-aioz-ai-cli">What is AIOZ AI CLI?<a class="hash" href="#what-is-aioz-ai-cli" aria-label="Link">#</a></h2>
+<p>AIOZ AI CLI creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics. The node runtime and keytool are bundled in the CLI binary.</p>
+<p><code>start</code> prints a status card and streams logs. Other commands print indented JSON. Failures print <code>{&quot;error&quot;: &quot;…&quot;}</code> on stdout (non-zero exit). Success JSON omits the error field. For JSON from <code>start</code>: <code>ai-cli --json start --priv-key-file privkey.json</code>.</p>
+<p>There is no <code>stop</code> command. Ctrl+C on attached <code>start</code> stops this wallet only.</p>
+<h2 id="requirements">Requirements<a class="hash" href="#requirements" aria-label="Link">#</a></h2>
+<ul>
+<li>Windows 10 64-bit (amd64) or later</li>
+<li>Linux x86_64 (amd64)</li>
+<li>macOS 12 or later, Apple Silicon (arm64) or x86_64 (amd64)</li>
+</ul>
+<h2 id="getting-started">Getting started<a class="hash" href="#getting-started" aria-label="Link">#</a></h2>
+<h3 id="windows">Windows<a class="hash" href="#windows" aria-label="Link">#</a></h3>
+<p>Download and extract the published v1.1.0 archive. The scripts below are written for Windows PowerShell.</p>
+<p>Work in <strong>your</strong> profile folder. Run PowerShell as that user, not Administrator:</p>
+<pre class="cmd language-powershell"><code>cd $env:USERPROFILE
+curl.exe -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.1.0/aioz-ai-cli-windows-amd64-1.1.0.zip
+Expand-Archive -LiteralPath aioz-ai-cli-windows-amd64-1.1.0.zip -DestinationPath . -Force
+Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
+</code></pre>
+<p>Verify the installation</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe version
+</code></pre>
+<p>The output should be the version of AIOZ AI CLI. The <code>built</code> value below is from the Windows amd64 archive; the other platform builds have their own timestamps.</p>
+<pre class="terminal"><code>{
+  &quot;built&quot;: &quot;2026-10-05T03:11:28Z&quot;,
+  &quot;commit&quot;: &quot;ea18a6d8ea298db58706b9d10ca1a73f671089ca&quot;,
+  &quot;version&quot;: &quot;1.1.0&quot;
+}
+</code></pre>
+<p>On PowerShell, type <code>.\ai-cli.exe</code> (the <code>.\</code> is required; <code>ai-cli.exe</code> alone is not found).</p>
+<p><code>--save-priv-key privkey.json</code> writes into the current folder. <code>Access is denied</code> means that folder is not yours — <code>cd $env:USERPROFILE</code> and retry. Node data is under <code>%LOCALAPPDATA%\aioz\ai-cli\</code>. The first <code>start</code> may show a Windows Firewall prompt; allow it for private networks.</p>
+<p>Generate a new mnemonic phrase and private key</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe keytool new --save-priv-key privkey.json
+</code></pre>
+<p><code>keytool new</code> requires <code>--save-priv-key</code>. The file is mode 0600 and <code>priv_key_file</code> is the absolute path. <code>-P</code> or <code>--password</code> adds <code>priv_armor</code>. Example: <code>ai-cli keytool new -P 12345678 --save-priv-key privkey.json</code>.</p>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;address&quot;: &quot;aioz1…&quot;,
+  &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;,
+  &quot;mnemonic&quot;: &quot;word1 word2 … word12&quot;,
+  &quot;priv_key&quot;: &quot;{\&quot;@type\&quot;:\&quot;/ethermint.crypto.v1.ethsecp256k1.PrivKey\&quot;,\&quot;key\&quot;:\&quot;…\&quot;}&quot;,
+  &quot;priv_key_file&quot;: &quot;&lt;absolute-path&gt;&quot;,
+  &quot;pub_key&quot;: &quot;{\&quot;@type\&quot;:\&quot;/ethermint.crypto.v1.ethsecp256k1.PubKey\&quot;,\&quot;key\&quot;:\&quot;…\&quot;}&quot;
+}
+</code></pre>
+<p class="os-label"><strong>Important</strong></p>
+<ul>
+<li>Treat your <code>privkey.json</code> and mnemonic phrase as <strong>wallet secrets</strong>. Anyone who has them can <strong>control your node rewards</strong>.</li>
+<li>Use a <strong>dedicated key for each node</strong>; <strong>do not reuse</strong> the key from your main wallet, exchange account, or other nodes.</li>
+<li>Store backups in an <strong>offline, encrypted location</strong> such as encrypted USB drives, air-gapped devices, or hardware security modules (HSM).</li>
+<li><strong>Never paste</strong> your mnemonic or private key into websites, chats, or support tickets.</li>
+</ul>
+<p>Set a storage limit. This is <strong>required before <code>start</code></strong>. The value must be <strong>greater than 2 GB</strong>. There is no 2 GB default:</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe storage limit 10 --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;success&quot;: true,
+  &quot;state&quot;: &quot;confirmation&quot;,
+  &quot;message&quot;: &quot;Storage allocation updated.&quot;,
+  &quot;storage_limit&quot;: &quot;10000000000&quot;,
+  &quot;storage_used&quot;: &quot;0&quot;
+}
+</code></pre>
+<p>You can run the same command later to raise the cap. It is applied on the next <code>start</code>.</p>
+<p>Start the node</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe start --priv-key-file privkey.json
+</code></pre>
+<p><code>--priv-key-file</code> the private key file which the node starts with.</p>
+<p>Default <code>start</code> prints a card, then streams logs. Ctrl+C stops <strong>this wallet only</strong>.</p>
+<p>Without <code>--home</code>, data for this wallet is <code>%LOCALAPPDATA%\aioz\ai-cli\ai-nodes\&lt;uuid&gt;\</code>.</p>
+<h3 id="macos-and-linux">macOS and Linux<a class="hash" href="#macos-and-linux" aria-label="Link">#</a></h3>
+<p>Download the published v1.1.0 archive for your operating system and CPU.</p>
+<p>For macOS - ARM64 (<code>uname -m</code> is <code>arm64</code>)</p>
+<pre class="cmd language-bash"><code>curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.1.0/aioz-ai-cli-darwin-arm64-1.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-arm64-1.1.0.tar.gz
+mv aioz-ai-cli-darwin-arm64 ai-cli
+xattr -dr com.apple.quarantine ./ai-cli
+</code></pre>
+<p>For macOS - x86_64 (<code>uname -m</code> is <code>x86_64</code>)</p>
+<pre class="cmd language-bash"><code>curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.1.0/aioz-ai-cli-darwin-x86_64-1.1.0.tar.gz
+tar -xzf aioz-ai-cli-darwin-x86_64-1.1.0.tar.gz
+mv aioz-ai-cli-darwin-x86_64 ai-cli
+xattr -dr com.apple.quarantine ./ai-cli
+</code></pre>
+<p>Do not use the x86_64 archive on Apple Silicon.</p>
+<p>For Linux, pick the archive that matches <code>uname -m</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>uname -m</code></th>
+<th>CPU</th>
+<th>Archive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x86_64</code></td>
+<td>amd64</td>
+<td><code>aioz-ai-cli-linux-amd64-1.1.0.tar.gz</code></td>
+</tr>
+</tbody>
+</table>
+<p>x86_64:</p>
+<pre class="cmd language-bash"><code>curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.1.0/aioz-ai-cli-linux-amd64-1.1.0.tar.gz
+tar -xzf aioz-ai-cli-linux-amd64-1.1.0.tar.gz
+mv aioz-ai-cli-linux-amd64 ai-cli
+</code></pre>
+<p>The archive contains the CLI, node runtime, and keytool. Run it as <code>./ai-cli</code>; no Go toolchain or separate payload download is needed. Linux ARM64 and FreeBSD are not included in v1.1.0.</p>
+<p>Verify the installation</p>
+<pre class="cmd language-bash"><code>./ai-cli version
+</code></pre>
+<p>The output should be the version of AIOZ AI CLI.</p>
+<p>Generate a new mnemonic phrase and private key</p>
+<pre class="cmd language-bash"><code>./ai-cli keytool new --save-priv-key privkey.json
+</code></pre>
+<p><code>keytool new</code> requires <code>--save-priv-key</code>. The file is mode 0600 and <code>priv_key_file</code> is the absolute path. <code>-P</code> or <code>--password</code> adds <code>priv_armor</code>. Example: <code>ai-cli keytool new -P 12345678 --save-priv-key privkey.json</code>.</p>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;address&quot;: &quot;aioz1…&quot;,
+  &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;,
+  &quot;mnemonic&quot;: &quot;word1 word2 … word12&quot;,
+  &quot;priv_key&quot;: &quot;{\&quot;@type\&quot;:\&quot;/ethermint.crypto.v1.ethsecp256k1.PrivKey\&quot;,\&quot;key\&quot;:\&quot;…\&quot;}&quot;,
+  &quot;priv_key_file&quot;: &quot;&lt;absolute-path&gt;&quot;,
+  &quot;pub_key&quot;: &quot;{\&quot;@type\&quot;:\&quot;/ethermint.crypto.v1.ethsecp256k1.PubKey\&quot;,\&quot;key\&quot;:\&quot;…\&quot;}&quot;
+}
+</code></pre>
+<p class="os-label"><strong>Important</strong></p>
+<ul>
+<li>Treat your <code>privkey.json</code> and mnemonic phrase as <strong>wallet secrets</strong>. Anyone who has them can <strong>control your node rewards</strong>.</li>
+<li>Use a <strong>dedicated key for each node</strong>; <strong>do not reuse</strong> the key from your main wallet, exchange account, or other nodes.</li>
+<li>Store backups in an <strong>offline, encrypted location</strong> such as encrypted USB drives, air-gapped devices, or hardware security modules (HSM).</li>
+<li><strong>Never paste</strong> your mnemonic or private key into websites, chats, or support tickets.</li>
+</ul>
+<p>Set a storage limit. This is <strong>required before <code>start</code></strong>. The value must be <strong>greater than 2 GB</strong>. There is no 2 GB default:</p>
+<pre class="cmd language-bash"><code>./ai-cli storage limit 10 --priv-key-file privkey.json
+</code></pre>
+<p>Start the node</p>
+<pre class="cmd language-bash"><code>./ai-cli start --priv-key-file privkey.json
+</code></pre>
+<p><code>--priv-key-file</code> the private key file which the node starts with.</p>
+<p>Default <code>start</code> prints a card, then streams logs. Ctrl+C stops <strong>this wallet only</strong>.</p>
+<p>Without <code>--home</code>, data for this wallet is Linux <code>~/.local/share/aioz/ai-cli/ai-nodes/&lt;uuid&gt;/</code> or macOS <code>~/Library/Application Support/aioz/ai-cli/ai-nodes/&lt;uuid&gt;/</code>.</p>
+<h2 id="usage">Usage<a class="hash" href="#usage" aria-label="Link">#</a></h2>
+<h3 id="start-the-node">Start the node<a class="hash" href="#start-the-node" aria-label="Link">#</a></h3>
+<p>Set a storage limit greater than 2 GB for this wallet before the first start. Then keep the terminal open while the node runs:</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe storage limit 10 --priv-key-file privkey.json
+.\ai-cli.exe start --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli storage limit 10 --priv-key-file privkey.json
+./ai-cli start --priv-key-file privkey.json
+</code></pre>
+<p>The default output is a status card followed by live logs. A Linux example (the home path wraps within the card):</p>
+<pre class="cmd language-text"><code class="language-text">╭─ node ───────────────────────────────────────────────────────────────╮
+│                                                                      │
+│  Status            running                                           │
+│  CLI               1.1.0                                             │
+│  Update            CLI is up to date                                 │
+│  PID               12345                                             │
+│  Home              /home/user/.local/share/aioz/ai-cli/ai-nodes/     │
+│                    &lt;uuid&gt;/                                           │
+│  Storage           10 GB                                             │
+│  EVM               0xAbc0…def1                                       │
+│                                                                      │
+│  ⚠                 streaming logs; Ctrl+C to stop the node           │
+│                                                                      │
+╰──────────────────────────────────────────────────────────────────────╯
+</code></pre>
+<p>Ctrl+C stops this wallet's node. There is no <code>stop</code> command. Use <a href="#json-start"><code>--json</code></a> for a machine-readable start response.</p>
+<h3 id="view-node-status">View node status<a class="hash" href="#view-node-status" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe status --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli status --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;,
+  &quot;home&quot;: &quot;~/.local/share/aioz/ai-cli/ai-nodes/&lt;uuid&gt;&quot;,
+  &quot;log_path&quot;: &quot;~/.local/state/aioz/ai-cli/logs/&lt;uuid&gt;/ai.log&quot;,
+  &quot;running&quot;: true,
+  &quot;pid&quot;: 12345,
+  &quot;state&quot;: &quot;success&quot;,
+  &quot;cpu&quot;: { &quot;cores&quot;: 8, &quot;message&quot;: &quot;Node is running.&quot; },
+  &quot;storage&quot;: {
+    &quot;state&quot;: &quot;success&quot;,
+    &quot;percent&quot;: 83,
+    &quot;used&quot;: &quot;487000000000&quot;,
+    &quot;limit&quot;: &quot;581000000000&quot;,
+    &quot;message&quot;: &quot;Storage in use.&quot;
+  }
+}
+</code></pre>
+<p><code>state</code> is <code>off</code>, <code>start</code>, <code>success</code>, or <code>alert</code>. <code>cpu.percent</code> is omitted until this process can be measured. <code>gpu</code> is present only when <code>nvidia-smi</code> returns a card, and only while the node is not <code>off</code>. <code>storage.state</code> is <code>alert</code> when used storage has reached the limit.</p>
+<p><code>status --all</code> returns one local machine sample and a <code>wallets</code> array. It does not need <code>--priv-key-file</code> and does not call the hub. Each indexed wallet remains in the array while stopped. A live process that is not in the index is added with <code>state</code> <code>alert</code>.</p>
+<pre class="terminal language-json"><code class="language-json">{
+  &quot;sample&quot;: {
+    &quot;sampled_at&quot;: &quot;2026-10-02T07:34:00Z&quot;,
+    &quot;cpu_percent&quot;: 6.0,
+    &quot;load_average&quot;: [0.42, 0.38, 0.31],
+    &quot;memory_available_bytes&quot;: 87001346048,
+    &quot;gpus&quot;: [
+      {
+        &quot;index&quot;: 0,
+        &quot;name&quot;: &quot;NVIDIA TITAN V&quot;,
+        &quot;percent&quot;: 10,
+        &quot;vram_total_bytes&quot;: 12884901888,
+        &quot;vram_used_bytes&quot;: 1223688192
+      }
+    ],
+    &quot;filesystems&quot;: [
+      {
+        &quot;mount&quot;: &quot;/&quot;,
+        &quot;total_bytes&quot;: 980122034176,
+        &quot;used_bytes&quot;: 326507765760,
+        &quot;available_bytes&quot;: 603751333888
+      }
+    ]
+  },
+  &quot;wallets&quot;: [
+    {
+      &quot;home&quot;: &quot;&lt;uuid-1&gt;&quot;,
+      &quot;path&quot;: &quot;&lt;node-home-1&gt;&quot;,
+      &quot;state&quot;: &quot;success&quot;,
+      &quot;running&quot;: true,
+      &quot;pid&quot;: 3471060,
+      &quot;cpu_percent&quot;: 3.5,
+      &quot;memory_rss_bytes&quot;: 1800000000,
+      &quot;gpu_percent&quot;: 8,
+      &quot;gpu_vram_bytes&quot;: 2684354560,
+      &quot;storage&quot;: {
+        &quot;state&quot;: &quot;success&quot;,
+        &quot;limit_bytes&quot;: 10000000000,
+        &quot;used_bytes&quot;: 1200000000,
+        &quot;remain_bytes&quot;: 8800000000,
+        &quot;remain_percent&quot;: 88.0,
+        &quot;measured_at&quot;: &quot;2026-10-02T07:34:00Z&quot;
+      }
+    },
+    {
+      &quot;home&quot;: &quot;&lt;uuid-2&gt;&quot;,
+      &quot;path&quot;: &quot;&lt;node-home-2&gt;&quot;,
+      &quot;state&quot;: &quot;off&quot;,
+      &quot;running&quot;: false,
+      &quot;cpu_percent&quot;: 0,
+      &quot;gpu_percent&quot;: 0,
+      &quot;gpu_vram_bytes&quot;: 0
+    }
+  ]
+}
+</code></pre>
+<p>Host <code>sample</code> values are measured on each invocation. Wallet CPU and GPU values sum the node process and its descendants. <code>storage</code> uses the local limit in <code>settings.json</code> and scans <code>storage_dir</code> on each invocation; <code>measured_at</code> records when the scan completed. The CLI does not cache this response. The UI can retain it and decide when to request a fresh sample. The <code>doctor</code> response also includes a <code>machine</code> object for relatively stable CPU, memory, GPU, disk, filesystem, and network-adapter details; call it once when the UI opens rather than polling it.</p>
+<p>List every indexed home on this machine (<code>--priv-key-file</code> is not required):</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe status --all
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli status --all
+</code></pre>
+<p><code>status --all</code> reads the index (<code>instances.json</code> on Linux: <code>~/.config/aioz/ai-cli/</code>). Deleting only <code>~/.local/share/aioz/ai-cli/ai-nodes/</code> does not clear the list.</p>
+<h3 id="clear-a-node-home">Clear a node home<a class="hash" href="#clear-a-node-home" aria-label="Link">#</a></h3>
+<p><code>clear</code> stops the node if it is running, then deletes that home and its index entry. The private key file is kept.</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe clear --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli clear --priv-key-file privkey.json
+</code></pre>
+<p>Delete every indexed home on this machine. <code>clear --all</code> prints a warning and continues only after <code>y</code>. Without a terminal, pass <code>--yes</code>. It deletes each home's data directory, pid file, and log. The private key file is kept.</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe clear --all
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli clear --all
+</code></pre>
+<p><code>clear</code> with no flag fails (<code>--priv-key-file is required</code>). Do not pass <code>--priv-key-file</code> and <code>--all</code> together.</p>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;cleared&quot;: 1,
+  &quot;running_stopped&quot;: 1,
+  &quot;priv_key_kept&quot;: true
+}
+</code></pre>
+<h3 id="set-storage-limit">Set storage limit<a class="hash" href="#set-storage-limit" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe storage limit 10 --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli storage limit 10 --priv-key-file privkey.json
+</code></pre>
+<p>This command sets the total storage limit in GB. The value must be <strong>greater than 2 GB</strong>. You cannot start until a limit is set. You can raise the limit later; it applies on the next <code>start</code>.</p>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;success&quot;: true,
+  &quot;state&quot;: &quot;confirmation&quot;,
+  &quot;message&quot;: &quot;Storage allocation updated.&quot;,
+  &quot;storage_limit&quot;: &quot;10000000000&quot;,
+  &quot;storage_used&quot;: &quot;0&quot;
+}
+</code></pre>
+<h3 id="view-storage">View storage<a class="hash" href="#view-storage" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe storage show --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli storage show --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;storage_limit&quot;: &quot;10000000000&quot;,
+  &quot;storage_used&quot;: &quot;0&quot;
+}
+</code></pre>
+<p><code>storage_limit</code> and <code>storage_used</code> are byte strings. Bare <code>storage</code> prints help.</p>
+<h3 id="view-reward">View reward<a class="hash" href="#view-reward" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe reward balance --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli reward balance --priv-key-file privkey.json
+</code></pre>
+<p>Works with the node off. Amounts are integer <code>attoaioz</code> strings. Each <code>*_aioz</code> field is the same amount in AIOZ, for display.</p>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;balances&quot;: {
+    &quot;denom&quot;: &quot;attoaioz&quot;,
+    &quot;total_earned&quot;: &quot;5641168955315402692&quot;,
+    &quot;total_withdrawn&quot;: &quot;10000000000000000&quot;,
+    &quot;balance&quot;: &quot;5631168955315402692&quot;,
+    &quot;total_earned_aioz&quot;: &quot;5.641168955315402692&quot;,
+    &quot;total_withdrawn_aioz&quot;: &quot;0.01&quot;,
+    &quot;balance_aioz&quot;: &quot;5.631168955315402692&quot;
+  }
+}
+</code></pre>
+<p><code>total_earned</code> is the AI reward since the beginning. <code>total_withdrawn</code> is what has already been sent. <code>balance</code> is what is left to withdraw.</p>
+<h3 id="reward-by-task">Reward by task<a class="hash" href="#reward-by-task" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe reward task --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli reward task --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;total&quot;: {
+    &quot;denom&quot;: &quot;attoaioz&quot;,
+    &quot;amount&quot;: &quot;5641168955315402692&quot;,
+    &quot;aioz&quot;: &quot;5.641168955315402692&quot;
+  },
+  &quot;task_types&quot;: {
+    &quot;inference&quot;: { &quot;amount&quot;: &quot;1410292238828850673&quot;, &quot;count&quot;: 1, &quot;aioz&quot;: &quot;1.410292238828850673&quot; },
+    &quot;training&quot;: { &quot;amount&quot;: &quot;1410292238828850673&quot;, &quot;count&quot;: 1, &quot;aioz&quot;: &quot;1.410292238828850673&quot; },
+    &quot;evaluation&quot;: { &quot;amount&quot;: &quot;1410292238828850673&quot;, &quot;count&quot;: 1, &quot;aioz&quot;: &quot;1.410292238828850673&quot; },
+    &quot;challenge&quot;: { &quot;amount&quot;: &quot;1410292238828850673&quot;, &quot;count&quot;: 1, &quot;aioz&quot;: &quot;1.410292238828850673&quot; }
+  }
+}
+</code></pre>
+<p>A task type is present only when the node reports it. <code>count</code> is how many tasks of that type earned the <code>amount</code>.</p>
+<h3 id="withdraw-history">Withdraw history<a class="hash" href="#withdraw-history" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe reward withdraw history --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli reward withdraw history --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;total&quot;: {
+    &quot;denom&quot;: &quot;attoaioz&quot;,
+    &quot;amount&quot;: &quot;10000000000000000&quot;,
+    &quot;aioz&quot;: &quot;0.01&quot;
+  },
+  &quot;count&quot;: 1,
+  &quot;items&quot;: [
+    {
+      &quot;amount&quot;: &quot;10000000000000000&quot;,
+      &quot;aioz&quot;: &quot;0.01&quot;,
+      &quot;timestamp&quot;: 1788504168.5052338,
+      &quot;time&quot;: &quot;2026-09-04T06:42:48.505233765Z&quot;,
+      &quot;tx_hash&quot;: &quot;…&quot;
+    }
+  ]
+}
+</code></pre>
+<p><code>timestamp</code> is unix seconds from the node. <code>time</code> is the same instant in UTC.</p>
+<h3 id="withdraw-reward">Withdraw reward<a class="hash" href="#withdraw-reward" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe reward withdraw --address 0xAbc0…def1 --amount 1 --priv-key-file privkey.json --yes
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli reward withdraw --address 0xAbc0…def1 --amount 1 --priv-key-file privkey.json --yes
+</code></pre>
+<p><code>--address</code> the address to withdraw the reward to. The reward is transferred on the <strong>AIOZ Chain</strong>. Use a MetaMask <code>0x</code> address.</p>
+<p><code>--amount</code> the amount of reward to withdraw, in AIOZ. Minimum withdrawal is <strong>0.01 AIOZ</strong>.</p>
+<p><code>--priv-key-file</code> the private key file that the node started with.</p>
+<p><code>--yes</code> skips the confirm prompt.</p>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;txid&quot;: &quot;2604F553…944D59&quot;
+}
+</code></pre>
+<h3 id="recover-private-key-from-mnemonic-phrase">Recover private key from mnemonic phrase<a class="hash" href="#recover-private-key-from-mnemonic-phrase" aria-label="Link">#</a></h3>
+<p>You can recover with the original <strong>12-word phrase</strong> (a 24-word phrase also works). Keep the words in their original order in a private file:</p>
+<p>Use <code>--mnemonic-file</code> so the phrase stays out of shell history:</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+</code></pre>
+<p>The response contains the recovered addresses and key JSON. It does not echo the mnemonic.</p>
+<pre class="terminal"><code>{
+  &quot;address&quot;: &quot;aioz1…&quot;,
+  &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;,
+  &quot;priv_key&quot;: &quot;{\&quot;@type\&quot;:\&quot;/ethermint.crypto.v1.ethsecp256k1.PrivKey\&quot;,\&quot;key\&quot;:\&quot;…\&quot;}&quot;,
+  &quot;priv_key_file&quot;: &quot;&lt;absolute-path&gt;&quot;,
+  &quot;pub_key&quot;: &quot;{\&quot;@type\&quot;:\&quot;/ethermint.crypto.v1.ethsecp256k1.PubKey\&quot;,\&quot;key\&quot;:\&quot;…\&quot;}&quot;
+}
+</code></pre>
+<p>Wrong word count:</p>
+<pre class="terminal"><code>{
+  &quot;error&quot;: &quot;mnemonic has 11 words (too few); need 12 or 24&quot;
+}
+</code></pre>
+<p>No words and no file: <code>{&quot;error&quot;: &quot;need mnemonic words or --mnemonic-file&quot;}</code>.</p>
+<h3 id="keytool-usage">Keytool usage<a class="hash" href="#keytool-usage" aria-label="Link">#</a></h3>
+<p><code>keytool</code> has seven commands:</p>
+<ul>
+<li><code>new</code> runs the keytool sidecar and prints DePIN JSON (<code>address</code>, <code>address_hex</code>, <code>pub_key</code>, <code>priv_key</code>, <code>mnemonic</code>). <code>--save-priv-key FILE</code> is required. <code>-P</code> / <code>--password</code> adds <code>priv_armor</code>. Default mnemonic length is 12 words; <code>--mnemonic-word 24</code> selects 24.</li>
+<li><code>recover</code> restores a wallet through the same sidecar from a 12- or 24-word <code>--mnemonic-file FILE</code>.</li>
+<li><code>encrypt [priv-key]</code> runs the sidecar and prints <code>address</code>, <code>address_hex</code>, and <code>priv_armor</code>. <code>-P</code> / <code>--password</code> is required to encrypt; the sidecar reads it from a file, not from its own arguments.</li>
+<li><code>decrypt [priv-armor]</code> runs the sidecar and prints <code>address</code>, <code>address_hex</code>, <code>pub_key</code>, and <code>priv_key</code>. Pass <code>--</code> before an armor string that starts with <code>-</code>.</li>
+<li><code>sign [priv-armor] [data]</code> runs the sidecar and prints <code>signature</code>. The data is the only sidecar argument; the armor and password stay in files.</li>
+<li><code>show --priv-key-file FILE</code> prints the wallet addresses without printing the private key. After a node has started, <code>keytool show --home PATH</code> can read the address recorded in that node home without the key file.</li>
+<li><code>export --priv-key-file FILE --out FILE</code> copies the private key to another file. The key is never printed to stdout; the destination file is also a wallet secret.</li>
+</ul>
+<p>To create a wallet with a 24-word mnemonic:</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe keytool new --mnemonic-word 24 --save-priv-key privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli keytool new --mnemonic-word 24 --save-priv-key privkey.json
+</code></pre>
+<p>To view the addresses for a private key file:</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe keytool show --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli keytool show --priv-key-file privkey.json
+</code></pre>
+<p>Response (addresses are placeholders):</p>
+<pre class="terminal language-json"><code class="language-json">{
+  &quot;address&quot;: &quot;aioz1…&quot;,
+  &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;
+}
+</code></pre>
+<p>To copy a private key file:</p>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe keytool export --priv-key-file privkey.json --out backup-privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli keytool export --priv-key-file privkey.json --out backup-privkey.json
+</code></pre>
+<p>Response:</p>
+<pre class="terminal language-json"><code class="language-json">{
+  &quot;out&quot;: &quot;backup-privkey.json&quot;
+}
+</code></pre>
+<p><code>new</code> and <code>recover</code> refuse an existing output file unless you pass <code>--force</code>, which replaces that file. <code>export</code> replaces an existing <code>--out</code> file. Use <code>ai-cli keytool &lt;command&gt; --help</code> for the flags of each command.</p>
+<h3 id="encrypt-decrypt-and-sign">Encrypt, decrypt, and sign<a class="hash" href="#encrypt-decrypt-and-sign" aria-label="Link">#</a></h3>
+<p>These commands use the bundled keytool. The CLI accepts key material as positional arguments; avoid storing real secrets in shell history. The values below are placeholders.</p>
+<p>For Windows:</p>
+<pre class="cmd language-powershell"><code class="language-powershell">.\ai-cli.exe keytool encrypt -P &lt;password&gt; '&lt;priv-key-json&gt;'
+.\ai-cli.exe keytool decrypt -P &lt;password&gt; -- '&lt;encrypted-armor&gt;'
+.\ai-cli.exe keytool sign -P &lt;password&gt; -- '&lt;encrypted-armor&gt;' 'message'
+</code></pre>
+<p>For macOS and Linux:</p>
+<pre class="cmd language-bash"><code class="language-bash">./ai-cli keytool encrypt -P &lt;password&gt; '&lt;priv-key-json&gt;'
+./ai-cli keytool decrypt -P &lt;password&gt; -- '&lt;encrypted-armor&gt;'
+./ai-cli keytool sign -P &lt;password&gt; -- '&lt;encrypted-armor&gt;' 'message'
+</code></pre>
+<p><code>encrypt</code> returns:</p>
+<pre class="terminal language-json"><code class="language-json">{&quot;address&quot;: &quot;aioz1…&quot;, &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;, &quot;priv_armor&quot;: &quot;&lt;encrypted-armor&gt;&quot;}
+</code></pre>
+<p><code>decrypt</code> returns:</p>
+<pre class="terminal language-json"><code class="language-json">{&quot;address&quot;: &quot;aioz1…&quot;, &quot;address_hex&quot;: &quot;0xAbc0…def1&quot;, &quot;priv_key&quot;: &quot;&lt;private-key-json&gt;&quot;, &quot;pub_key&quot;: &quot;&lt;public-key-json&gt;&quot;}
+</code></pre>
+<p><code>sign</code> returns:</p>
+<pre class="terminal language-json"><code class="language-json">{&quot;signature&quot;: &quot;&lt;base64-signature&gt;&quot;}
+</code></pre>
+<h3 id="errors">Errors<a class="hash" href="#errors" aria-label="Link">#</a></h3>
+<p>Every failed command prints JSON on stdout and exits non-zero. That includes <code>start</code> and <code>keytool</code>.</p>
+<pre class="terminal"><code>{
+  &quot;error&quot;: &quot;--priv-key-file is required&quot;
+}
+</code></pre>
+<p>Wrong input names the actual mistake:</p>
+<ul>
+<li>missing <code>--priv-key-file</code> on <code>start</code>, <code>status</code>, <code>storage</code>, or <code>reward</code></li>
+<li>recover: not 12 or 24 words, or both the phrase and <code>--mnemonic-file</code></li>
+<li><code>storage limit abc</code> / <code>10GB</code> → <code>storage limit must be a number of GB</code> (not the 2 GB floor)</li>
+<li><code>start extra</code> → <code>start does not take arguments</code></li>
+<li><code>start</code> before <code>storage limit</code> → set a storage limit first</li>
+<li>One live node per wallet; Ctrl+C on <code>start</code> stops this wallet only</li>
+</ul>
+<h3 id="update">Update<a class="hash" href="#update" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe update
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli update
+</code></pre>
+<p>Downloads the matching archive for this OS from the latest release. <code>update --check-only</code> prints status and does not download. <code>update --stop</code> stops every node on this machine first, then replaces the binary.</p>
+<h3 id="stats">Stats<a class="hash" href="#stats" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe stats --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli stats --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;ai_tasks&quot;: [],
+  &quot;status&quot;: &quot;standby&quot;,
+  &quot;wallet_address&quot;: &quot;0xAbc0…def1&quot;
+}
+</code></pre>
+<p><code>status</code> values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>standby</code></td>
+<td>Active and idle (ready for work).</td>
+</tr>
+<tr>
+<td><code>computing</code></td>
+<td>Active and processing a task.</td>
+</tr>
+<tr>
+<td><code>initiating</code></td>
+<td>Logging in and registering with the system; not ready yet.</td>
+</tr>
+<tr>
+<td><code>coming_soon</code></td>
+<td>Went offline within the last 2 minutes.</td>
+</tr>
+<tr>
+<td><code>offline</code></td>
+<td>Not active.</td>
+</tr>
+</tbody>
+</table>
+<p>If the hub is unreachable, stdout is <code>{&quot;error&quot;: &quot;…&quot;}</code> and the process exits non-zero.</p>
+<h3 id="logs">Logs<a class="hash" href="#logs" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe logs --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli logs --priv-key-file privkey.json
+</code></pre>
+<p>Prints a snapshot of this wallet's <code>ai.log</code> (redacted on screen). Live logs stream from attached <code>start</code>.</p>
+<h3 id="doctor">Doctor<a class="hash" href="#doctor" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe doctor --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli doctor --priv-key-file privkey.json
+</code></pre>
+<p>Response</p>
+<pre class="terminal"><code>{
+  &quot;ok&quot;: true,
+  &quot;checks&quot;: [
+    {&quot;name&quot;: &quot;os&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;linux/amd64&quot;},
+    {&quot;name&quot;: &quot;home&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;~/.local/share/aioz/ai-cli/ai-nodes/&lt;uuid&gt;&quot;},
+    {&quot;name&quot;: &quot;disk&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;100 GB free&quot;},
+    {&quot;name&quot;: &quot;runtime&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;ok&quot;},
+    {&quot;name&quot;: &quot;wallet&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;0xAbc0…def1&quot;},
+    {&quot;name&quot;: &quot;log&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;~/.local/state/aioz/ai-cli/logs/&lt;uuid&gt;/ai.log&quot;},
+    {&quot;name&quot;: &quot;identity&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;credential is --priv-key-file&quot;},
+    {&quot;name&quot;: &quot;gpu&quot;, &quot;ok&quot;: true, &quot;detail&quot;: &quot;NVIDIA, 8 GB&quot;}
+  ],
+  &quot;machine&quot;: {
+    &quot;os&quot;: &quot;linux&quot;,
+    &quot;os_name&quot;: &quot;Ubuntu 24.04 LTS&quot;,
+    &quot;kernel&quot;: &quot;6.8.0-generic&quot;,
+    &quot;architecture&quot;: &quot;amd64&quot;,
+    &quot;uptime_seconds&quot;: 720000,
+    &quot;cpu&quot;: {
+      &quot;model&quot;: &quot;AMD Ryzen Threadripper 1950X&quot;,
+      &quot;sockets&quot;: 1,
+      &quot;cores&quot;: 16,
+      &quot;threads&quot;: 32,
+      &quot;min_mhz&quot;: 2200,
+      &quot;max_mhz&quot;: 3400
+    },
+    &quot;memory&quot;: {&quot;total_bytes&quot;: 101202948096, &quot;swap_total_bytes&quot;: 8589934592},
+    &quot;gpus&quot;: [
+      {
+        &quot;index&quot;: 0,
+        &quot;name&quot;: &quot;NVIDIA TITAN V&quot;,
+        &quot;vram_bytes&quot;: 12884901888,
+        &quot;compute_capability&quot;: &quot;7.0&quot;,
+        &quot;driver_version&quot;: &quot;580.178.04&quot;,
+        &quot;cuda_version&quot;: &quot;13.0&quot;
+      }
+    ],
+    &quot;disks&quot;: [
+      {&quot;name&quot;: &quot;sda&quot;, &quot;model&quot;: &quot;Samsung SSD 860 EVO&quot;, &quot;size_bytes&quot;: 1000204886016, &quot;rotational&quot;: false}
+    ],
+    &quot;nics&quot;: [{&quot;name&quot;: &quot;enp5s0&quot;, &quot;speed_mbps&quot;: 1000, &quot;mtu&quot;: 1500}],
+    &quot;filesystems&quot;: [
+      {&quot;mount&quot;: &quot;/&quot;, &quot;total_bytes&quot;: 980122034176, &quot;used_bytes&quot;: 326507765760, &quot;available_bytes&quot;: 603751333888}
+    ]
+  }
+}
+</code></pre>
+<p><code>machine</code> contains relatively stable hardware details for a later UI. Call <code>doctor</code> when opening the machine page or when the operator requests a fresh hardware check; do not poll it alongside <code>status --all</code>.</p>
+<h3 id="json-start">JSON start<a class="hash" href="#json-start" aria-label="Link">#</a></h3>
+<p class="os-label">For Windows</p>
+<pre class="cmd language-powershell"><code>.\ai-cli.exe --json start --priv-key-file privkey.json
+</code></pre>
+<p class="os-label">For macOS and Linux</p>
+<pre class="cmd language-bash"><code>./ai-cli --json start --priv-key-file privkey.json
+</code></pre>
+<p>Example output from production v1.1.0 (paths, PID, and wallet address are placeholders). <code>data_dir</code> is the node home. <code>update.current</code> is <code>1.1.0</code> and <code>note</code> is <code>CLI is up to date</code> when the signed manifest is reachable:</p>
+<pre class="terminal language-json"><code class="language-json">{
+  &quot;data_dir&quot;: &quot;&lt;node-home&gt;&quot;,
+  &quot;evm_address&quot;: &quot;0xAbc0…def1&quot;,
+  &quot;home&quot;: &quot;&lt;node-home&gt;&quot;,
+  &quot;log_path&quot;: &quot;&lt;log-path&gt;&quot;,
+  &quot;pid&quot;: 12345,
+  &quot;pid_path&quot;: &quot;&lt;pid-path&gt;&quot;,
+  &quot;running&quot;: true,
+  &quot;storage_bytes&quot;: 10000000000,
+  &quot;update&quot;: {
+    &quot;skipped&quot;: false,
+    &quot;newer&quot;: false,
+    &quot;current&quot;: &quot;1.1.0&quot;,
+    &quot;current_commit&quot;: &quot;ea18a6d8ea298db58706b9d10ca1a73f671089ca&quot;,
+    &quot;remote&quot;: &quot;1.1.0&quot;,
+    &quot;remote_commit&quot;: &quot;ea18a6d8ea298db58706b9d10ca1a73f671089ca&quot;,
+    &quot;note&quot;: &quot;CLI is up to date&quot;
+  }
+}
+</code></pre>
+<p>When you stop the attached command with Ctrl+C, it prints a second JSON object:</p>
+<pre class="terminal language-json"><code class="language-json">{
+  &quot;running&quot;: 0,
+  &quot;status&quot;: &quot;stopped&quot;
+}
+</code></pre>
+<p>Logs are not streamed in JSON mode unless you also pass <code>--follow</code>; those logs go to stderr.</p>
+  </main>
+</div>
+<script>
+(function () {
+  var CMD = "#3FA4FF", FLAG = "#D19A66", STR = "#1AC69C", PUNC = "#C478FF";
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function paint(tok, color) {
+    return '<span style="color:' + color + '">' + esc(tok) + "</span>";
+  }
+  function colorize(src) {
+    return src.split("\n").map(function (line) {
+      var parts = line.match(/("[^"]*"|'[^']*'|https?:\/\/\S+|`[^`]+`|\S+|\s+)/g);
+      if (!parts) return "";
+      var first = true;
+      return parts.map(function (tok) {
+        if (/^\s+$/.test(tok)) return paint(tok, PUNC);
+        if (first) {
+          first = false;
+          return paint(tok, CMD);
+        }
+        if (/^-/.test(tok)) return paint(tok, FLAG);
+        return paint(tok, STR);
+      }).join("");
+    }).join("\n");
+  }
+  document.querySelectorAll("pre.cmd code").forEach(function (el) {
+    el.innerHTML = colorize(el.textContent);
+  });
+  function goToId(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ block: "start" });
+  }
+  document.querySelectorAll('aside a[href^="#"]').forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      var id = (a.getAttribute("href") || "").slice(1);
+      if (!id) return;
+      e.preventDefault();
+      if (history.replaceState) history.replaceState(null, "", "#" + id);
+      goToId(id);
+    });
+  });
+  if (location.hash) goToId(location.hash.slice(1));
+})();
+</script>
+</body>
+</html>
