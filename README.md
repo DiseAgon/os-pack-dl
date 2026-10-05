@@ -26,8 +26,8 @@ Download the archive for your OS, extract it, and rename the inner file to `ai-c
 
 ```json
 {
-  "built": "2026-10-05T03:11:25Z",
-  "commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+  "built": "2026-10-05T03:27:36Z",
+  "commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
   "version": "1.1.0"
 }
 ```
@@ -245,9 +245,9 @@ Example output from production v1.1.0. Paths, PID, and the wallet address are pl
     "skipped": false,
     "newer": false,
     "current": "1.1.0",
-    "current_commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+    "current_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
     "remote": "1.1.0",
-    "remote_commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+    "remote_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
     "note": "CLI is up to date"
   }
 }
@@ -506,9 +506,9 @@ Download the latest signed CLI and replace this binary. Most commands also check
   "skipped": false,
   "newer": false,
   "current": "1.1.0",
-  "current_commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+  "current_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
   "remote": "1.1.0",
-  "remote_commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+  "remote_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
   "note": "CLI is up to date"
 }
 ```
