@@ -107,7 +107,7 @@ Writes a new private-key JSON and prints the mnemonic once.
 ./ai-cli keytool new --save-priv-key privkey.json
 ```
 
-`--save-priv-key` writes the private key JSON (mode `0600`). Store the mnemonic now; it is not shown again. This does not create a data folder.
+`--save-priv-key` writes the private key JSON. On Linux and macOS its file mode is `0600`; on Windows, keep it in your user profile. Store the mnemonic now; it is not shown again. This does not create a data folder.
 
 ```json
 {
