@@ -41,8 +41,8 @@ The output should be the version of AIOZ AI CLI. The `built` value below is from
 
 ```
 {
-  "built": "2026-10-05T03:11:28Z",
-  "commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+  "built": "2026-10-05T03:27:39Z",
+  "commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
   "version": "1.1.0"
 }
 ```
@@ -929,9 +929,9 @@ Example output from production v1.1.0 (paths, PID, and wallet address are placeh
     "skipped": false,
     "newer": false,
     "current": "1.1.0",
-    "current_commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+    "current_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
     "remote": "1.1.0",
-    "remote_commit": "ea18a6d8ea298db58706b9d10ca1a73f671089ca",
+    "remote_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
     "note": "CLI is up to date"
   }
 }
