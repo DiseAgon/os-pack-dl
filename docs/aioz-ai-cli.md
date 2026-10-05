@@ -57,7 +57,7 @@ Generate a new mnemonic phrase and private key
 .\ai-cli.exe keytool new --save-priv-key privkey.json
 ```
 
-`keytool new` requires `--save-priv-key`. The file is mode 0600 and `priv_key_file` is the absolute path. `-P` or `--password` adds `priv_armor`. Example: `ai-cli keytool new -P 12345678 --save-priv-key privkey.json`.
+`keytool new` requires `--save-priv-key`. Keep this secret file in your user profile; `priv_key_file` is its absolute path. `-P` or `--password` adds `priv_armor`. Example: `.\ai-cli.exe keytool new -P 12345678 --save-priv-key privkey.json`.
 
 Response
 
