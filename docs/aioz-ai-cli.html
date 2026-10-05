@@ -600,7 +600,7 @@ mv aioz-ai-cli-linux-amd64 ai-cli
 <h3 id="keytool-usage">Keytool usage<a class="hash" href="#keytool-usage" aria-label="Link">#</a></h3>
 <p><code>keytool</code> has seven commands:</p>
 <ul>
-<li><code>new</code> runs the keytool sidecar and prints DePIN JSON (<code>address</code>, <code>address_hex</code>, <code>pub_key</code>, <code>priv_key</code>, <code>mnemonic</code>). <code>--save-priv-key FILE</code> is required. <code>-P</code> / <code>--password</code> adds <code>priv_armor</code>. Default mnemonic length is 12 words; <code>--mnemonic-word 24</code> selects 24.</li>
+<li><code>new</code> runs the keytool sidecar and prints wallet JSON (<code>address</code>, <code>address_hex</code>, <code>pub_key</code>, <code>priv_key</code>, <code>mnemonic</code>). <code>--save-priv-key FILE</code> is required. <code>-P</code> / <code>--password</code> adds <code>priv_armor</code>. Default mnemonic length is 12 words; <code>--mnemonic-word 24</code> selects 24.</li>
 <li><code>recover</code> restores a wallet through the same sidecar from a 12- or 24-word <code>--mnemonic-file FILE</code>.</li>
 <li><code>encrypt [priv-key]</code> runs the sidecar and prints <code>address</code>, <code>address_hex</code>, and <code>priv_armor</code>. <code>-P</code> / <code>--password</code> is required to encrypt; the sidecar reads it from a file, not from its own arguments.</li>
 <li><code>decrypt [priv-armor]</code> runs the sidecar and prints <code>address</code>, <code>address_hex</code>, <code>pub_key</code>, and <code>priv_key</code>. Pass <code>--</code> before an armor string that starts with <code>-</code>.</li>
