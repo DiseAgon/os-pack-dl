@@ -202,7 +202,7 @@ Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 <p>Generate a new mnemonic phrase and private key</p>
 <pre class="cmd language-powershell"><code>.\ai-cli.exe keytool new --save-priv-key privkey.json
 </code></pre>
-<p><code>keytool new</code> requires <code>--save-priv-key</code>. The file is mode 0600 and <code>priv_key_file</code> is the absolute path. <code>-P</code> or <code>--password</code> adds <code>priv_armor</code>. Example: <code>ai-cli keytool new -P 12345678 --save-priv-key privkey.json</code>.</p>
+<p><code>keytool new</code> requires <code>--save-priv-key</code>. Keep this secret file in your user profile; <code>priv_key_file</code> is its absolute path. <code>-P</code> or <code>--password</code> adds <code>priv_armor</code>. Example: <code>.\ai-cli.exe keytool new -P 12345678 --save-priv-key privkey.json</code>.</p>
 <p>Response</p>
 <pre class="terminal"><code>{
   &quot;address&quot;: &quot;aioz1…&quot;,
