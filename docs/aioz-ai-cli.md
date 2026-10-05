@@ -638,7 +638,7 @@ No words and no file: `{"error": "need mnemonic words or --mnemonic-file"}`.
 
 `keytool` has seven commands:
 
-- `new` runs the keytool sidecar and prints DePIN JSON (`address`, `address_hex`, `pub_key`, `priv_key`, `mnemonic`). `--save-priv-key FILE` is required. `-P` / `--password` adds `priv_armor`. Default mnemonic length is 12 words; `--mnemonic-word 24` selects 24.
+- `new` runs the keytool sidecar and prints wallet JSON (`address`, `address_hex`, `pub_key`, `priv_key`, `mnemonic`). `--save-priv-key FILE` is required. `-P` / `--password` adds `priv_armor`. Default mnemonic length is 12 words; `--mnemonic-word 24` selects 24.
 - `recover` restores a wallet through the same sidecar from a 12- or 24-word `--mnemonic-file FILE`.
 - `encrypt [priv-key]` runs the sidecar and prints `address`, `address_hex`, and `priv_armor`. `-P` / `--password` is required to encrypt; the sidecar reads it from a file, not from its own arguments.
 - `decrypt [priv-armor]` runs the sidecar and prints `address`, `address_hex`, `pub_key`, and `priv_key`. Pass `--` before an armor string that starts with `-`.
