@@ -2,7 +2,7 @@
 
 `ai-cli` is the command-line tool for running and managing an AIOZ AI Node. It creates a wallet, sets a storage cap, starts the node, and exposes status, logs, rewards, stats, and diagnostics.
 
-Production **v1.1.0** supports Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64. Each archive bundles the CLI, the Ainode 2.41 runtime, and a matching keytool. Linux ARM64 and FreeBSD packages are temporarily unavailable in v1.1.0.
+Production **v1.1.0** supports Linux amd64, Windows amd64, macOS Apple Silicon (arm64), and macOS x86_64. Each archive bundles the node runtime and a keytool for that OS.
 
 Download the archive for your OS below. [Release v1.1.0](https://github.com/DiseAgon/os-pack-dl/releases/tag/v1.1.0).
 
@@ -10,9 +10,9 @@ Download the archive for your OS below. [Release v1.1.0](https://github.com/Dise
 
 - Windows 10 64-bit (amd64) or later
 - Linux x86_64 (amd64)
-- macOS 12+ 64-bit, Apple Silicon (arm64) or x86_64 (amd64)
+- macOS 12 or later, Apple Silicon (arm64) or x86_64
 
-`start` prints a **card**, then **streams logs**. Other commands print indented JSON. Failures print `{"error": "…"}` on stdout (exit ≠ 0). Success JSON omits the `error` field.
+`start` prints a **card**, then **streams logs**. Other commands print indented JSON. Failures print `{"error": "…"}` on stdout (exit ≠ 0). Success JSON omits the error field.
 
 Windows PowerShell: type `.\ai-cli.exe` (the `.\` is required).
 
@@ -22,15 +22,17 @@ Linux and macOS: `./ai-cli` or `ai-cli` if it is on `PATH`.
 
 Download the archive for your OS, extract it, and rename the inner file to `ai-cli` or `ai-cli.exe`.
 
-`version` prints JSON. `commit` is the source git SHA, not the version tag. This sample is the Linux amd64 build; `built` differs across platform archives.
+`version` prints JSON. `commit` is the git SHA of this build, not the version tag.
 
 ```json
 {
-  "built": "2026-10-05T03:27:36Z",
-  "commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
+  "built": "2026-10-09T07:20:07Z",
+  "commit": "76c38854b711035fb17cb82348db41e5a256bf4f",
   "version": "1.1.0"
 }
 ```
+
+The `built` value above is from the Linux amd64 archive. The other platform builds have their own timestamps.
 
 ### Windows
 
@@ -48,17 +50,12 @@ Move-Item -Force .\aioz-ai-cli-windows-amd64.exe .\ai-cli.exe
 
 ### Linux
 
-v1.1.0 is available for `x86_64` (amd64). Check `uname -m` before downloading:
-
 ```bash
-uname -m
 curl -fLO https://github.com/DiseAgon/os-pack-dl/releases/download/v1.1.0/aioz-ai-cli-linux-amd64-1.1.0.tar.gz
 tar -xzf aioz-ai-cli-linux-amd64-1.1.0.tar.gz
 mv aioz-ai-cli-linux-amd64 ai-cli
 ./ai-cli version
 ```
-
-Linux ARM64 is temporarily unavailable in v1.1.0.
 
 ### macOS
 
@@ -87,13 +84,13 @@ mv aioz-ai-cli-darwin-x86_64 ai-cli
 ./ai-cli version
 ```
 
-Match the macOS archive to `uname -m`. FreeBSD is temporarily unavailable in v1.1.0.
+Do not use the x86_64 archive on Apple Silicon.
 
 ## First run
 
 ### 1. Create a key
 
-Writes a new private-key JSON and prints the mnemonic once.
+`keytool new --save-priv-key` writes the node key (mode `0600`) and prints the mnemonic. It does not print the private key. This does not create a data folder.
 
 **Windows**
 
@@ -107,17 +104,30 @@ Writes a new private-key JSON and prints the mnemonic once.
 ./ai-cli keytool new --save-priv-key privkey.json
 ```
 
-`--save-priv-key` writes the private key JSON. On Linux and macOS its file mode is `0600`; on Windows, keep it in your user profile. Store the mnemonic now; it is not shown again. This does not create a data folder.
-
 ```json
 {
   "address": "aioz1…",
   "address_hex": "0xAbc0…def1",
   "mnemonic": "word1 word2 … word12",
-  "priv_key": "{\"@type\":\"/ethermint.crypto.v1.ethsecp256k1.PrivKey\",\"key\":\"…\"}",
   "priv_key_file": "<absolute-path>",
   "pub_key": "{\"@type\":\"/ethermint.crypto.v1.ethsecp256k1.PubKey\",\"key\":\"…\"}"
 }
+```
+
+To keep the mnemonic in a file, pass a password file and a secrets file together. Create `password.txt` yourself first; the CLI does not create it. That command does not print the mnemonic or the private key. `decrypt` then writes the node key.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool new --password-file password.txt --secrets-out secrets.json
+.\ai-cli.exe keytool decrypt --password-file password.txt --armor-file secrets.json --save-priv-key privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool new --password-file password.txt --secrets-out secrets.json
+./ai-cli keytool decrypt --password-file password.txt --armor-file secrets.json --save-priv-key privkey.json
 ```
 
 Treat `privkey.json` and the mnemonic as **wallet secrets**. Use a **dedicated key for each node**. Keep an offline backup. Never paste them into websites, chats, or support tickets.
@@ -201,7 +211,6 @@ Response:
 │                                                                      │
 │  Status            running                                           │
 │  CLI               1.1.0                                             │
-│  Update            CLI is up to date                                 │
 │  PID               12345                                             │
 │  Home              ~/.local/share/aioz/ai-cli/ai-nodes/<uuid>/       │
 │  Storage           10 GB                                             │
@@ -215,9 +224,7 @@ Response:
 
 Logs then stream in the same terminal. The `...` means the command is still running.
 
-Response:
-
-Example output from production v1.1.0. Paths, PID, and the wallet address are placeholders. `data_dir` is the node home. `update.note` is `CLI is up to date` when the signed manifest is reachable. The command keeps running after this object. `ai-cli --json start` does not stream logs unless you also pass `--follow` (logs then go to stderr).
+`ai-cli --json start` prints one JSON object and does not stream logs unless you also pass `--follow` (logs then go to stderr). Paths below are placeholders. `data_dir` is the node home. `start` does not check for a CLI update.
 
 **Windows**
 
@@ -240,16 +247,7 @@ Example output from production v1.1.0. Paths, PID, and the wallet address are pl
   "pid": 12345,
   "pid_path": "<pid-path>",
   "running": true,
-  "storage_bytes": 10000000000,
-  "update": {
-    "skipped": false,
-    "newer": false,
-    "current": "1.1.0",
-    "current_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
-    "remote": "1.1.0",
-    "remote_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
-    "note": "CLI is up to date"
-  }
+  "storage_bytes": 10000000000
 }
 ```
 
@@ -264,40 +262,6 @@ Log paths:
 | Linux | `~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log` |
 | Windows | `%LOCALAPPDATA%\aioz\ai-cli\logs\<uuid>\ai.log` |
 | macOS | `~/Library/Logs/aioz/ai-cli/<uuid>/ai.log` |
-
-### Clear a node
-
-Stops the selected node and deletes its home, index entry, PID file, and log. The private-key file is kept.
-
-**Windows**
-
-```powershell
-.\ai-cli.exe clear --priv-key-file privkey.json
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli clear --priv-key-file privkey.json
-```
-
-```json
-{"cleared": 1, "running_stopped": 1, "priv_key_kept": true}
-```
-
-To clear every indexed home, use `clear --all`. It asks for confirmation; add `--yes` in unattended sessions.
-
-**Windows**
-
-```powershell
-.\ai-cli.exe clear --all --yes
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli clear --all --yes
-```
 
 ### Storage show
 
@@ -351,7 +315,7 @@ Live logs: leave `start` attached, or tail `path` / `log_path` on disk.
 
 ### Reward balance
 
-Total earned, total withdrawn, and remaining AIOZ. Works with the node off. Integer amounts use `attoaioz`; `*_aioz` fields are for display.
+Works with the node off. Amounts are integer `attoaioz` strings. Each `*_aioz` field is the same amount in AIOZ, for display. `total_earned` is the AI reward since the beginning. `total_withdrawn` is what has already been sent. `balance` is what is left to withdraw.
 
 **Windows**
 
@@ -379,90 +343,6 @@ Total earned, total withdrawn, and remaining AIOZ. Works with the node off. Inte
 }
 ```
 
-### Reward by task
-
-AI rewards grouped by task type. Types appear only when reported by the node.
-
-**Windows**
-
-```powershell
-.\ai-cli.exe reward task --priv-key-file privkey.json
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli reward task --priv-key-file privkey.json
-```
-
-```json
-{
-  "total": {
-    "denom": "attoaioz",
-    "amount": "5641168955315402692",
-    "aioz": "5.641168955315402692"
-  },
-  "task_types": {
-    "inference": {
-      "amount": "1410292238828850673",
-      "count": 1,
-      "aioz": "1.410292238828850673"
-    },
-    "training": {
-      "amount": "1410292238828850673",
-      "count": 1,
-      "aioz": "1.410292238828850673"
-    },
-    "evaluation": {
-      "amount": "1410292238828850673",
-      "count": 1,
-      "aioz": "1.410292238828850673"
-    },
-    "challenge": {
-      "amount": "1410292238828850673",
-      "count": 1,
-      "aioz": "1.410292238828850673"
-    }
-  }
-}
-```
-
-### Withdraw history
-
-Previously sent withdrawals, with UTC time and transaction hash.
-
-**Windows**
-
-```powershell
-.\ai-cli.exe reward withdraw history --priv-key-file privkey.json
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli reward withdraw history --priv-key-file privkey.json
-```
-
-```json
-{
-  "total": {
-    "denom": "attoaioz",
-    "amount": "10000000000000000",
-    "aioz": "0.01"
-  },
-  "count": 1,
-  "items": [
-    {
-      "amount": "10000000000000000",
-      "aioz": "0.01",
-      "timestamp": 1788504168.5052338,
-      "time": "2026-09-04T06:42:48.505233765Z",
-      "tx_hash": "…"
-    }
-  ]
-}
-```
-
 ### Withdraw
 
 Send rewards to a MetaMask `0x` on AIOZ. `--amount` is in AIOZ. Minimum **0.01 AIOZ**. `--yes` skips the confirm prompt.
@@ -487,7 +367,7 @@ Send rewards to a MetaMask `0x` on AIOZ. `--amount` is in AIOZ. Minimum **0.01 A
 
 ### Update
 
-Download the latest signed CLI and replace this binary. Most commands also check GitHub in the background.
+Downloads the matching archive for this OS from the latest release. `start` does not check, download, or replace the CLI. `version` and `update --check-only` read the manifest and do not install.
 
 **Windows**
 
@@ -506,9 +386,9 @@ Download the latest signed CLI and replace this binary. Most commands also check
   "skipped": false,
   "newer": false,
   "current": "1.1.0",
-  "current_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
+  "current_commit": "76c38854b711035fb17cb82348db41e5a256bf4f",
   "remote": "1.1.0",
-  "remote_commit": "7fab2348b770774f214c557fcbf46a8b9ffb1d4f",
+  "remote_commit": "76c38854b711035fb17cb82348db41e5a256bf4f",
   "note": "CLI is up to date"
 }
 ```
@@ -517,7 +397,7 @@ Download the latest signed CLI and replace this binary. Most commands also check
 
 ### Status
 
-This wallet’s local state, process CPU and GPU use, and measured storage.
+Whether this wallet's node process is running on this machine. `state` is `off`, `start`, `success`, or `alert`.
 
 **Windows**
 
@@ -531,8 +411,6 @@ This wallet’s local state, process CPU and GPU use, and measured storage.
 ./ai-cli status --priv-key-file privkey.json
 ```
 
-Response:
-
 ```json
 {
   "address_hex": "0xAbc0…def1",
@@ -541,10 +419,7 @@ Response:
   "running": true,
   "pid": 12345,
   "state": "success",
-  "cpu": {
-    "cores": 8,
-    "message": "Node is running."
-  },
+  "cpu": { "cores": 8, "message": "Node is running." },
   "storage": {
     "state": "success",
     "percent": 83,
@@ -555,7 +430,7 @@ Response:
 }
 ```
 
-`status --all` samples the local machine and lists every indexed wallet, including stopped nodes. No `--priv-key-file`.
+`status --all` returns one machine `sample` and a `wallets` array. It does not need `--priv-key-file` and does not call the hub. Stopped wallets stay in the array.
 
 **Windows**
 
@@ -574,11 +449,7 @@ Response:
   "sample": {
     "sampled_at": "2026-10-02T07:34:00Z",
     "cpu_percent": 6.0,
-    "load_average": [
-      0.42,
-      0.38,
-      0.31
-    ],
+    "load_average": [0.42, 0.38, 0.31],
     "memory_available_bytes": 87001346048,
     "gpus": [
       {
@@ -669,7 +540,7 @@ If the hub is unreachable, stdout is `{"error": "…"}` and the process exits no
 
 ### Doctor
 
-Checks disk, runtime, wallet, GPU, and this wallet’s log. The `machine` object reports relatively stable hardware details; `status --all` gives a fresh host sample on each invocation.
+Checks disk, runtime, wallet, GPU, and this wallet's log.
 
 **Windows**
 
@@ -687,46 +558,14 @@ Checks disk, runtime, wallet, GPU, and this wallet’s log. The `machine` object
 {
   "ok": true,
   "checks": [
-    {
-      "name": "os",
-      "ok": true,
-      "detail": "linux/amd64"
-    },
-    {
-      "name": "home",
-      "ok": true,
-      "detail": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>"
-    },
-    {
-      "name": "disk",
-      "ok": true,
-      "detail": "100 GB free"
-    },
-    {
-      "name": "runtime",
-      "ok": true,
-      "detail": "ok"
-    },
-    {
-      "name": "wallet",
-      "ok": true,
-      "detail": "0xAbc0…def1"
-    },
-    {
-      "name": "log",
-      "ok": true,
-      "detail": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log"
-    },
-    {
-      "name": "identity",
-      "ok": true,
-      "detail": "credential is --priv-key-file"
-    },
-    {
-      "name": "gpu",
-      "ok": true,
-      "detail": "NVIDIA, 8 GB"
-    }
+    {"name": "os", "ok": true, "detail": "linux/amd64"},
+    {"name": "home", "ok": true, "detail": "~/.local/share/aioz/ai-cli/ai-nodes/<uuid>"},
+    {"name": "disk", "ok": true, "detail": "100 GB free"},
+    {"name": "runtime", "ok": true, "detail": "ok"},
+    {"name": "wallet", "ok": true, "detail": "0xAbc0…def1"},
+    {"name": "log", "ok": true, "detail": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log"},
+    {"name": "identity", "ok": true, "detail": "credential is --priv-key-file"},
+    {"name": "gpu", "ok": true, "detail": "NVIDIA, 8 GB"}
   ],
   "machine": {
     "os": "linux",
@@ -742,10 +581,7 @@ Checks disk, runtime, wallet, GPU, and this wallet’s log. The `machine` object
       "min_mhz": 2200,
       "max_mhz": 3400
     },
-    "memory": {
-      "total_bytes": 101202948096,
-      "swap_total_bytes": 8589934592
-    },
+    "memory": {"total_bytes": 101202948096, "swap_total_bytes": 8589934592},
     "gpus": [
       {
         "index": 0,
@@ -757,89 +593,17 @@ Checks disk, runtime, wallet, GPU, and this wallet’s log. The `machine` object
       }
     ],
     "disks": [
-      {
-        "name": "sda",
-        "model": "Samsung SSD 860 EVO",
-        "size_bytes": 1000204886016,
-        "rotational": false
-      }
+      {"name": "sda", "model": "Samsung SSD 860 EVO", "size_bytes": 1000204886016, "rotational": false}
     ],
-    "nics": [
-      {
-        "name": "enp5s0",
-        "speed_mbps": 1000,
-        "mtu": 1500
-      }
-    ],
+    "nics": [{"name": "enp5s0", "speed_mbps": 1000, "mtu": 1500}],
     "filesystems": [
-      {
-        "mount": "/",
-        "total_bytes": 980122034176,
-        "used_bytes": 326507765760,
-        "available_bytes": 603751333888
-      }
+      {"mount": "/", "total_bytes": 980122034176, "used_bytes": 326507765760, "available_bytes": 603751333888}
     ]
   }
 }
 ```
 
-### Encrypt, decrypt, and sign
-
-`keytool encrypt`, `decrypt`, and `sign` use the bundled keytool. These CLI commands accept the key material as positional arguments. Keep private material out of shell history when using them.
-
-Encrypt a private-key JSON string with `-P`:
-
-**Windows**
-
-```powershell
-.\ai-cli.exe keytool encrypt -P <password> '<priv-key-json>'
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli keytool encrypt -P <password> '<priv-key-json>'
-```
-
-```json
-{"address": "aioz1…", "address_hex": "0xAbc0…def1", "priv_armor": "<encrypted-armor>"}
-```
-
-Decrypt that armor (the `--` separates flags from the armor):
-
-**Windows**
-
-```powershell
-.\ai-cli.exe keytool decrypt -P <password> -- '<encrypted-armor>'
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli keytool decrypt -P <password> -- '<encrypted-armor>'
-```
-
-```json
-{"address": "aioz1…", "address_hex": "0xAbc0…def1", "priv_key": "<private-key-json>", "pub_key": "<public-key-json>"}
-```
-
-Sign data with the encrypted armor:
-
-**Windows**
-
-```powershell
-.\ai-cli.exe keytool sign -P <password> -- '<encrypted-armor>' 'message'
-```
-
-**Linux and macOS**
-
-```bash
-./ai-cli keytool sign -P <password> -- '<encrypted-armor>' 'message'
-```
-
-```json
-{"signature": "<base64-signature>"}
-```
+`machine` is the stable hardware snapshot. Run `doctor` when you want that check. `status --all` is the sample to repeat.
 
 ### Show address
 
@@ -886,33 +650,71 @@ Copies `--priv-key-file` to `--out`. The key is never printed. An existing `--ou
 }
 ```
 
-### Recover a key
+### Encrypt, decrypt, and sign
 
-A 12-word phrase is the usual case. A 24-word phrase also works. Put the original words in a private text file and use `--mnemonic-file`.
+Password, private key, and armor are files. These commands do not print the private key.
 
 **Windows**
 
 ```powershell
-.\ai-cli.exe keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+.\ai-cli.exe keytool encrypt --priv-key-file privkey.json --password-file password.txt --save-armor armor.txt
+.\ai-cli.exe keytool decrypt --password-file password.txt --armor-file armor.txt --save-priv-key privkey.json
+.\ai-cli.exe keytool sign --armor-file armor.txt --password-file password.txt -- 'message'
 ```
 
 **Linux and macOS**
 
 ```bash
-./ai-cli keytool recover --mnemonic-file words.txt --save-priv-key privkey.json
+./ai-cli keytool encrypt --priv-key-file privkey.json --password-file password.txt --save-armor armor.txt
+./ai-cli keytool decrypt --password-file password.txt --armor-file armor.txt --save-priv-key privkey.json
+./ai-cli keytool sign --armor-file armor.txt --password-file password.txt -- 'message'
 ```
 
-`recover` refuses an existing output file unless you pass `--force`. It returns the recovered addresses and key JSON, but does not echo the mnemonic.
+`encrypt` returns `address`, `address_hex`, and `priv_armor_file`. `decrypt` returns `address`, `address_hex`, `pub_key`, and `priv_key_file`. `sign` returns `signature`.
+
+### Recover a key
+
+A 12-word phrase is the usual case. A 24-word phrase also works. Keep the words in a private file. `recover` does not take the phrase on the command line.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool recover --mnemonic-file mnemonic.txt --save-priv-key privkey.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool recover --mnemonic-file mnemonic.txt --save-priv-key privkey.json
+```
+
+`--save-priv-key` writes the node key and prints the mnemonic. It does not print the private key. To write a secrets file instead, pass `--password-file` and `--secrets-out` together. That form does not print the mnemonic.
+
+**Windows**
+
+```powershell
+.\ai-cli.exe keytool recover --password-file password.txt --mnemonic-file mnemonic.txt --secrets-out secrets.json
+```
+
+**Linux and macOS**
+
+```bash
+./ai-cli keytool recover --password-file password.txt --mnemonic-file mnemonic.txt --secrets-out secrets.json
+```
 
 ```json
 {
   "address": "aioz1…",
   "address_hex": "0xAbc0…def1",
-  "priv_key": "{\"@type\":\"/ethermint.crypto.v1.ethsecp256k1.PrivKey\",\"key\":\"…\"}",
+  "mnemonic": "word1 word2 … word12",
   "priv_key_file": "<absolute-path>",
   "pub_key": "{\"@type\":\"/ethermint.crypto.v1.ethsecp256k1.PubKey\",\"key\":\"…\"}"
 }
 ```
+
+`mnemonic` and `priv_key_file` are present when `--save-priv-key` is set. With `--secrets-out`, stdout has `secrets_out` and omits `mnemonic`. `recover` refuses an existing output file unless you pass `--force`.
+
+Wrong word count: `{"error": "mnemonic has 11 words (too few); need 12 or 24"}`. Words on the command line: `{"error": "keytool recover does not take arguments; use --mnemonic-file"}`.
 
 ## Troubleshooting
 
@@ -924,8 +726,8 @@ A 12-word phrase is the usual case. A 24-word phrase also works. Put the origina
 | `set a storage limit before start` | `storage limit N --priv-key-file privkey.json` with **N > 2**. |
 | `storage must be greater than 2 GB` | Same: N must be **greater than 2**. |
 | `storage limit must be a number of GB` | Pass a number (`10`), not `10GB` or `abc`. |
-| `mnemonic has N words` | Recover needs **12 or 24** words. |
-| `need mnemonic words or --mnemonic-file` | Pass the private phrase file with `--mnemonic-file`. |
+| `mnemonic has N words` | The file needs **12 or 24** words. |
+| `keytool recover does not take arguments` | Put the phrase in a file and pass `--mnemonic-file`. |
 | `start does not take arguments` | Only flags (`--priv-key-file`). |
 | `--priv-key-file is required` | Pass the JSON you created with `keytool new`. |
 | `wallet_address already running` | Ctrl+C that wallet's `start`. One live node per key. |
@@ -934,12 +736,8 @@ A 12-word phrase is the usual case. A 24-word phrase also works. Put the origina
 
 ## Security
 
-- Keep `privkey.json` and mnemonic files private. Do not commit them or paste them into chat, tickets, or websites.
+- Keep `privkey.json`, `secrets.json`, `password.txt`, and mnemonic files private. Do not commit them or paste them into chat, tickets, or websites.
 - Prefer `keytool recover --mnemonic-file` so the words are not stored in shell history.
 - Never put `privkey.json` contents on the command line.
 - `logs` redacts secrets it recognizes; do not publish the log file on disk.
 - One live node per wallet. Ctrl+C on `start` stops this wallet only.
-
-## Documentation
-
-The [operator guide](./docs/aioz-ai-cli.md) includes installation, all v1.1.0 commands, and complete JSON examples. See the [release notes](./RELEASE.md) for new features and bug fixes.
