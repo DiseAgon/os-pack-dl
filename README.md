@@ -26,8 +26,8 @@ Download the archive for your OS, extract it, and rename the inner file to `ai-c
 
 ```json
 {
-  "built": "2026-10-09T07:20:07Z",
-  "commit": "76c38854b711035fb17cb82348db41e5a256bf4f",
+  "built": "2026-10-09T10:17:34Z",
+  "commit": "aaade09cf6657e588c148857d262df468cf5c6a1",
   "version": "1.1.0"
 }
 ```
@@ -386,9 +386,9 @@ Downloads the matching archive for this OS from the latest release. `start` does
   "skipped": false,
   "newer": false,
   "current": "1.1.0",
-  "current_commit": "76c38854b711035fb17cb82348db41e5a256bf4f",
+  "current_commit": "aaade09cf6657e588c148857d262df468cf5c6a1",
   "remote": "1.1.0",
-  "remote_commit": "76c38854b711035fb17cb82348db41e5a256bf4f",
+  "remote_commit": "aaade09cf6657e588c148857d262df468cf5c6a1",
   "note": "CLI is up to date"
 }
 ```
@@ -429,6 +429,8 @@ Whether this wallet's node process is running on this machine. `state` is `off`,
   }
 }
 ```
+
+`used` is the size of the local storage directory and `limit` is the saved cap. This command does not ask the hub for storage.
 
 `status --all` returns one machine `sample` and a `wallets` array. It does not need `--priv-key-file` and does not call the hub. Stopped wallets stay in the array.
 
