@@ -452,22 +452,22 @@ Whether this wallet's node process is running on this machine. `state` is `off`,
     "sampled_at": "2026-10-02T07:34:00Z",
     "cpu_percent": 6.0,
     "load_average": [0.42, 0.38, 0.31],
-    "memory_available_bytes": 87001346048,
+    "memory_available_bytes": 8000000000,
     "gpus": [
       {
         "index": 0,
-        "name": "NVIDIA TITAN V",
+        "name": "Example GPU",
         "percent": 10,
-        "vram_total_bytes": 12884901888,
-        "vram_used_bytes": 1223688192
+        "vram_total_bytes": 8000000000,
+        "vram_used_bytes": 1000000000
       }
     ],
     "filesystems": [
       {
         "mount": "/",
-        "total_bytes": 980122034176,
-        "used_bytes": 326507765760,
-        "available_bytes": 603751333888
+        "total_bytes": 100000000000,
+        "used_bytes": 40000000000,
+        "available_bytes": 60000000000
       }
     ]
   },
@@ -477,11 +477,11 @@ Whether this wallet's node process is running on this machine. `state` is `off`,
       "path": "<node-home-1>",
       "state": "success",
       "running": true,
-      "pid": 3471060,
+      "pid": 12345,
       "cpu_percent": 3.5,
       "memory_rss_bytes": 1800000000,
       "gpu_percent": 8,
-      "gpu_vram_bytes": 2684354560,
+      "gpu_vram_bytes": 1000000000,
       "storage": {
         "state": "success",
         "limit_bytes": 10000000000,
@@ -571,35 +571,35 @@ Checks disk, runtime, wallet, GPU, and this wallet's log.
   ],
   "machine": {
     "os": "linux",
-    "os_name": "Ubuntu 24.04 LTS",
-    "kernel": "6.8.0-generic",
+    "os_name": "Linux",
+    "kernel": "generic",
     "architecture": "amd64",
-    "uptime_seconds": 720000,
+    "uptime_seconds": 3600,
     "cpu": {
-      "model": "AMD Ryzen Threadripper 1950X",
+      "model": "Example CPU",
       "sockets": 1,
-      "cores": 16,
-      "threads": 32,
-      "min_mhz": 2200,
-      "max_mhz": 3400
+      "cores": 8,
+      "threads": 16,
+      "min_mhz": 2000,
+      "max_mhz": 4000
     },
-    "memory": {"total_bytes": 101202948096, "swap_total_bytes": 8589934592},
+    "memory": {"total_bytes": 16000000000, "swap_total_bytes": 8000000000},
     "gpus": [
       {
         "index": 0,
-        "name": "NVIDIA TITAN V",
-        "vram_bytes": 12884901888,
-        "compute_capability": "7.0",
-        "driver_version": "580.178.04",
-        "cuda_version": "13.0"
+        "name": "Example GPU",
+        "vram_bytes": 8000000000,
+        "compute_capability": "0.0",
+        "driver_version": "000.00",
+        "cuda_version": "0.0"
       }
     ],
     "disks": [
-      {"name": "sda", "model": "Samsung SSD 860 EVO", "size_bytes": 1000204886016, "rotational": false}
+      {"name": "sda", "model": "Example SSD", "size_bytes": 100000000000, "rotational": false}
     ],
-    "nics": [{"name": "enp5s0", "speed_mbps": 1000, "mtu": 1500}],
+    "nics": [{"name": "eth0", "speed_mbps": 1000, "mtu": 1500}],
     "filesystems": [
-      {"mount": "/", "total_bytes": 980122034176, "used_bytes": 326507765760, "available_bytes": 603751333888}
+      {"mount": "/", "total_bytes": 100000000000, "used_bytes": 40000000000, "available_bytes": 60000000000}
     ]
   }
 }
