@@ -567,7 +567,7 @@ Checks disk, runtime, wallet, GPU, and this wallet's log.
     {"name": "wallet", "ok": true, "detail": "0xAbc0…def1"},
     {"name": "log", "ok": true, "detail": "~/.local/state/aioz/ai-cli/logs/<uuid>/ai.log"},
     {"name": "identity", "ok": true, "detail": "credential is --priv-key-file"},
-    {"name": "gpu", "ok": true, "detail": "NVIDIA, 8 GB"}
+    {"name": "gpu", "ok": true, "detail": "Example GPU, 8 GB"}
   ],
   "machine": {
     "os": "linux",
